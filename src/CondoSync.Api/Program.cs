@@ -100,7 +100,8 @@ try
         options
             .WithTitle("CondoSync API")
             .WithTheme(Scalar.AspNetCore.ScalarTheme.Purple)
-            .WithDefaultHttpClient(Scalar.AspNetCore.ScalarTarget.CSharp, Scalar.AspNetCore.ScalarClient.HttpClient);
+            .WithDefaultHttpClient(Scalar.AspNetCore.ScalarTarget.CSharp, Scalar.AspNetCore.ScalarClient.HttpClient)
+            .WithPreferredScheme("Bearer");
     });
 
     // Redirecionar root para Scalar
