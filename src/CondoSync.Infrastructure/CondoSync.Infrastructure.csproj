@@ -5,6 +5,20 @@
     <ProjectReference Include="..\CondoSync.Application\CondoSync.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Configurations\" />
+    <Folder Include="Data\EventStore\" />
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Data\Outbox\" />
+    <Folder Include="External\Cache\" />
+    <Folder Include="External\MessageBus\" />
+    <Folder Include="External\Notification\" />
+    <Folder Include="External\Payment\" />
+    <Folder Include="External\Storage\" />
+    <Folder Include="Repositories\" />
+    <Folder Include="Tenant\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -23,4 +23,12 @@
     <ProjectReference Include="..\..\src\CondoSync.Application\CondoSync.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Commands\" />
+    <Folder Include="Application\Queries\" />
+    <Folder Include="Core\Entities\" />
+    <Folder Include="Core\ValueObjects\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
