@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CondoSync.Api/CondoSync.Api.csproj" />
+    <Project Path="src/CondoSync.Application/CondoSync.Application.csproj" />
+    <Project Path="src/CondoSync.Core/CondoSync.Core.csproj" />
+    <Project Path="src/CondoSync.Infrastructure/CondoSync.Infrastructure.csproj" />
+    <Project Path="src/CondoSync.Scheduler/CondoSync.Scheduler.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CondoSync.Tests.Integration/CondoSync.Tests.Integration.csproj" />
+    <Project Path="tests/CondoSync.Tests.Unit/CondoSync.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
