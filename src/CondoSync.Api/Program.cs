@@ -1,3 +1,4 @@
+// Arquivo: src/CondoSync.Api/Program.cs
 using CondoSync.Api.Extensions;
 using CondoSync.Api.Middlewares;
 using FluentValidation;
@@ -86,26 +87,35 @@ try
         options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
     });
 
-    // Swagger e Scalar (disponível em todos os ambientes para dev)
-    app.UseSwagger();
+    // Swagger (disponível em /swagger)
+    app.UseSwagger(options =>
+    {
+        options.RouteTemplate = "swagger/{documentName}/swagger.json";
+    });
+
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "CondoSync API v1");
         c.RoutePrefix = "swagger";
+        c.DocumentTitle = "CondoSync API - Swagger";
     });
 
-    // Scalar para documentação interativa
+    // Scalar (disponível em /scalar/v1)
     app.MapScalarApiReference(options =>
     {
         options
             .WithTitle("CondoSync API")
-            .WithTheme(Scalar.AspNetCore.ScalarTheme.Purple)
-            .WithDefaultHttpClient(Scalar.AspNetCore.ScalarTarget.CSharp, Scalar.AspNetCore.ScalarClient.HttpClient)
-            .WithPreferredScheme("Bearer");
+            .WithTheme(ScalarTheme.Purple)
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+            .WithPreferredScheme("Bearer")
+            .WithDarkModeToggle(true)
+            .WithOpenApiRoutePattern("/swagger/v1/swagger.json");
     });
 
-    // Redirecionar root para Scalar
+    // Redirecionamentos
     app.MapGet("/", () => Results.Redirect("/scalar/v1"));
+    app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+    app.MapGet("/api", () => Results.Redirect("/scalar/v1"));
 
     // CORS
     if (app.Environment.IsDevelopment())
@@ -133,17 +143,21 @@ try
             var response = new
             {
                 status = report.Status.ToString(),
+                timestamp = DateTime.UtcNow,
                 checks = report.Entries.Select(e => new
                 {
                     name = e.Key,
                     status = e.Value.Status.ToString(),
                     description = e.Value.Description
                 }),
-                duration = report.TotalDuration
+                totalDuration = report.TotalDuration.ToString()
             };
             await context.Response.WriteAsJsonAsync(response);
         }
     });
+
+    // Health check rápido (liveness)
+    app.MapGet("/healthz", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
     // Mapear controllers
     app.MapControllers();
@@ -154,10 +168,10 @@ try
 
     Log.Information("🚀 CondoSync API iniciando no ambiente {Environment}...",
         app.Environment.EnvironmentName);
-
-    Log.Information("📚 Swagger disponível em: http://localhost:5000/swagger");
-    Log.Information("📖 Scalar disponível em: http://localhost:5000/scalar/v1");
-    Log.Information("❤️ Health check em: http://localhost:5000/health");
+    Log.Information("📖 Scalar (Principal): http://localhost:5000/scalar/v1");
+    Log.Information("📚 Swagger: http://localhost:5000/swagger");
+    Log.Information("❤️ Health Check: http://localhost:5000/health");
+    Log.Information("💚 Liveness: http://localhost:5000/healthz");
 
     app.Run();
 }
