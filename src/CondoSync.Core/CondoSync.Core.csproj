@@ -8,12 +8,8 @@
 
   <ItemGroup>
     <Folder Include="Entities\" />
-    <Folder Include="Enums\" />
     <Folder Include="Events\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Specifications\" />
-    <Folder Include="ValueObjects\" />
   </ItemGroup>
 
   <ItemGroup>
