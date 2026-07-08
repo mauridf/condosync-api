@@ -1,4 +1,3 @@
-// Arquivo: src/CondoSync.Api/Program.cs
 using CondoSync.Api.Extensions;
 using CondoSync.Api.Middlewares;
 using FluentValidation;
