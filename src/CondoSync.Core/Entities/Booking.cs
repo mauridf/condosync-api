@@ -90,7 +90,7 @@ public class Booking : AggregateRoot<Guid>, ITenantEntity
             Description = description,
             GuestsCount = guestsCount,
             Amount = amount,
-            PaymentStatus = amount > 0 ? PaymentStatus.Pending : PaymentStatus.NotRequired,
+            PaymentStatus = amount > 0 ? Enums.PaymentStatus.Pending : Enums.PaymentStatus.NotRequired,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -170,7 +170,7 @@ public class Booking : AggregateRoot<Guid>, ITenantEntity
         if (Amount <= 0)
             throw new DomainException("Reserva não requer pagamento");
 
-        PaymentStatus = PaymentStatus.Paid;
+        PaymentStatus = Enums.PaymentStatus.Paid;
         PaymentMethod = paymentMethod;
         TransactionId = transactionId;
         PaidAt = DateTime.UtcNow;
