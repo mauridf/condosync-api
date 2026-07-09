@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using CondoSync.Application.Common.Interfaces;
+using CondoSync.Core.Interfaces;
 using CondoSync.Infrastructure.Data;
 using CondoSync.Infrastructure.Data.Migrations;
-using CondoSync.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CondoSync.Infrastructure;
 
@@ -38,6 +39,10 @@ public static class DependencyInjection
         // Registrar serviços de infraestrutura
         services.AddScoped(typeof(IRepository<>), typeof(Repositories.GenericRepository<>));
         services.AddScoped<IUnitOfWork, Data.UnitOfWork>();
+
+        services.AddScoped<IPasswordHasher, CondoSync.Application.Services.PasswordService>();
+        services.AddScoped<ITokenService, CondoSync.Application.Services.TokenService>();
+        services.AddScoped<CondoSync.Application.Services.AuthService>();
 
         // TODO: Registrar serviços externos quando implementados
         // services.AddScoped<IStorageService, MinioStorageService>();
