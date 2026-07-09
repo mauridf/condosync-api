@@ -40,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repositories.GenericRepository<>));
         services.AddScoped<IUnitOfWork, Data.UnitOfWork>();
 
+        services.AddScoped<Infrastructure.Services.AdminDashboardService>();
+
         services.AddScoped<IPasswordHasher, CondoSync.Application.Services.PasswordService>();
         services.AddScoped<ITokenService, CondoSync.Application.Services.TokenService>();
         services.AddScoped<CondoSync.Application.Services.AuthService>();

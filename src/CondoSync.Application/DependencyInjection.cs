@@ -15,6 +15,7 @@ public static class DependencyInjection
 
         // Serviços administrativos
         services.AddScoped<AdminService>();
+        services.AddScoped<UnitService>();
 
         return services;
     }
