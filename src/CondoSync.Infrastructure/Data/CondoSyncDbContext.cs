@@ -1,0 +1,67 @@
+﻿using CondoSync.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
+namespace CondoSync.Infrastructure.Data;
+
+public class CondoSyncDbContext : DbContext
+{
+    // Entidades principais
+    public DbSet<Condominium> Condominiums { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Unit> Units { get; set; } = null!;
+    public DbSet<Resident> Residents { get; set; } = null!;
+    public DbSet<Service> Services { get; set; } = null!;
+    public DbSet<Booking> Bookings { get; set; } = null!;
+    public DbSet<Notice> Notices { get; set; } = null!;
+    public DbSet<NoticeComment> NoticeComments { get; set; } = null!;
+    public DbSet<Ticket> Tickets { get; set; } = null!;
+    public DbSet<TicketMessage> TicketMessages { get; set; } = null!;
+    public DbSet<Bill> Bills { get; set; } = null!;
+    public DbSet<Visitor> Visitors { get; set; } = null!;
+    public DbSet<CommonArea> CommonAreas { get; set; } = null!;
+    public DbSet<Poll> Polls { get; set; } = null!;
+    public DbSet<PollVote> PollVotes { get; set; } = null!;
+    public DbSet<Document> Documents { get; set; } = null!;
+    public DbSet<Notification> Notifications { get; set; } = null!;
+    public DbSet<ActivityLog> ActivityLogs { get; set; } = null!;
+    public DbSet<UnitInvitation> UnitInvitations { get; set; } = null!;
+    public DbSet<CondominiumSettings> CondominiumSettings { get; set; } = null!;
+
+    // Infraestrutura
+    public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
+    public DbSet<EventStoreEntry> EventStore { get; set; } = null!;
+
+    public CondoSyncDbContext(DbContextOptions<CondoSyncDbContext> options) : base(options)
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasDefaultSchema("public");
+
+        // Aplicar configurações de cada entidade
+        modelBuilder.ApplyConfiguration(new Configurations.CondominiumConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.UserConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.UnitConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.ResidentConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.ServiceConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.BookingConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.NoticeConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.NoticeCommentConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.TicketConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.TicketMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.BillConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.VisitorConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.CommonAreaConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.PollConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.PollVoteConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.DocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.NotificationConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.ActivityLogConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.UnitInvitationConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.CondominiumSettingsConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.OutboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.EventStoreEntryConfiguration());
+    }
+}

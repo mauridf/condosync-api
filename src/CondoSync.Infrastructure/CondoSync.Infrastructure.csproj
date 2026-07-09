@@ -6,7 +6,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Configurations\" />
     <Folder Include="Data\EventStore\" />
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Outbox\" />
