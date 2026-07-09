@@ -58,12 +58,12 @@ public class CondominiumConfiguration : IEntityTypeConfiguration<Condominium>
         builder.Property(e => e.SubscriptionPlan)
             .HasConversion<string>()
             .HasMaxLength(50)
-            .HasDefaultValue("trial");
+            .HasDefaultValue(SubscriptionPlan.Trial);
 
         builder.Property(e => e.SubscriptionStatus)
             .HasConversion<string>()
             .HasMaxLength(30)
-            .HasDefaultValue("trial");
+            .HasDefaultValue(SubscriptionStatus.Trial);
 
         builder.Property(e => e.MaxUnits)
             .HasDefaultValue(0);
@@ -81,7 +81,7 @@ public class CondominiumConfiguration : IEntityTypeConfiguration<Condominium>
 
         builder.Property(e => e.EnabledModules)
             .HasColumnType("jsonb")
-            .HasDefaultValue("[\"units\",\"residents\",\"notices\",\"tickets\"]");
+            .HasDefaultValueSql("'[\"units\",\"residents\",\"notices\",\"tickets\"]'::jsonb");
 
         builder.Property(e => e.Settings)
             .HasColumnType("jsonb");

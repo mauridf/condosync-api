@@ -19,7 +19,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(e => e.BookingDate).IsRequired();
         builder.Property(e => e.StartTime).IsRequired();
         builder.Property(e => e.EndTime).IsRequired();
-        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue("Pending");
+        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue(BookingStatus.Pending);
         builder.Property(e => e.Title).HasMaxLength(300);
         builder.Property(e => e.Description).HasColumnType("text");
         builder.Property(e => e.GuestsCount).HasDefaultValue(0);

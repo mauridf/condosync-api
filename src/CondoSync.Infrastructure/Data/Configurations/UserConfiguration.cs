@@ -44,7 +44,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(30)
-            .HasDefaultValue("Resident");
+            .HasDefaultValue(UserRole.Resident);
 
         builder.Property(e => e.FailedLoginAttempts)
             .HasDefaultValue(0);
@@ -60,11 +60,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(e => e.NotificationPreferences)
             .HasColumnType("jsonb")
-            .HasDefaultValue("{\"email\": true, \"push\": true, \"in_app\": true}");
+            .HasDefaultValueSql("'{\"email\": true, \"push\": true, \"in_app\": true}'::jsonb");
 
         builder.Property(e => e.ThemePreferences)
             .HasColumnType("jsonb")
-            .HasDefaultValue("{\"mode\": \"light\", \"accent_color\": \"#1976D2\"}");
+            .HasDefaultValueSql("'{\"mode\": \"light\", \"accent_color\": \"#1976D2\"}'::jsonb");
 
         builder.Property(e => e.CreatedAt)
             .HasDefaultValueSql("NOW()");

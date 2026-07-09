@@ -33,7 +33,7 @@ public class UnitConfiguration : IEntityTypeConfiguration<Unit>
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(50)
-            .HasDefaultValue("Apartment");
+            .HasDefaultValue(UnitType.Apartment);
 
         builder.Property(e => e.Area)
             .HasPrecision(10, 2);
@@ -56,7 +56,7 @@ public class UnitConfiguration : IEntityTypeConfiguration<Unit>
         builder.Property(e => e.OccupancyStatus)
             .HasConversion<string>()
             .HasMaxLength(30)
-            .HasDefaultValue("Vacant");
+            .HasDefaultValue(UnitOccupancyStatus.Vacant);
 
         builder.Property(e => e.MonthlyFee)
             .HasPrecision(10, 2);

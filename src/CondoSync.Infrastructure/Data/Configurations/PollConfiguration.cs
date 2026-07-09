@@ -16,7 +16,7 @@ public class PollConfiguration : IEntityTypeConfiguration<Poll>
         builder.Property(e => e.CreatedBy).IsRequired();
         builder.Property(e => e.Title).IsRequired().HasMaxLength(300);
         builder.Property(e => e.Description).HasColumnType("text");
-        builder.Property(e => e.PollType).HasConversion<string>().HasMaxLength(30).HasDefaultValue("Single");
+        builder.Property(e => e.PollType).HasConversion<string>().HasMaxLength(30).HasDefaultValue(PollType.Single);
         builder.Property(e => e.IsAnonymous).HasDefaultValue(false);
         builder.Property(e => e.IsMandatory).HasDefaultValue(false);
         builder.Property(e => e.RequiresUnitVote).HasDefaultValue(false);
@@ -25,7 +25,7 @@ public class PollConfiguration : IEntityTypeConfiguration<Poll>
         builder.Property(e => e.EndsAt).IsRequired();
         builder.Property(e => e.TotalVotes).HasDefaultValue(0);
         builder.Property(e => e.ResultsVisibility).HasMaxLength(30).HasDefaultValue("after_end");
-        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue("Draft");
+        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue(PollStatus.Draft);
         builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
 

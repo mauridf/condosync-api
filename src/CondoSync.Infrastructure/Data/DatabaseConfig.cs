@@ -22,11 +22,9 @@ public static class DatabaseConfig
 
             npgsqlOptions.CommandTimeout(30);
 
-            // Configurar timestamp com timezone como padrão
             npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         });
 
-        // Habilitar logging detalhado em desenvolvimento
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.EnableDetailedErrors();
     }

@@ -29,7 +29,7 @@ public class BillConfiguration : IEntityTypeConfiguration<Bill>
         builder.Property(e => e.LateFeePercentage).HasPrecision(5, 2).HasDefaultValue(2.00m);
         builder.Property(e => e.LateInterestDaily).HasPrecision(5, 2).HasDefaultValue(0.033m);
         builder.Property(e => e.MaxInterestMonths).HasDefaultValue(12);
-        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue("Pending");
+        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue(BillStatus.Pending);
         builder.Property(e => e.PaymentAmount).HasPrecision(10, 2);
         builder.Property(e => e.PaymentMethod).HasMaxLength(50);
         builder.Property(e => e.TransactionId).HasMaxLength(100);

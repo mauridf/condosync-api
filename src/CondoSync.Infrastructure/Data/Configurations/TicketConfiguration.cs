@@ -20,8 +20,8 @@ public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         builder.Property(e => e.Description).IsRequired().HasColumnType("text");
         builder.Property(e => e.Category).IsRequired().HasMaxLength(100);
         builder.Property(e => e.Subcategory).HasMaxLength(100);
-        builder.Property(e => e.Priority).HasConversion<string>().HasMaxLength(20).HasDefaultValue("Normal");
-        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue("Open");
+        builder.Property(e => e.Priority).HasConversion<string>().HasMaxLength(20).HasDefaultValue(TicketPriority.Normal);
+        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue(TicketStatus.Open);
         builder.Property(e => e.SlaHours).HasDefaultValue(48);
         builder.Property(e => e.Resolution).HasColumnType("text");
         builder.Property(e => e.LocationType).HasMaxLength(50);

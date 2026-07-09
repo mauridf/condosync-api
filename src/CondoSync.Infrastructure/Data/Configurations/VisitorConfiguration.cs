@@ -28,7 +28,7 @@ public class VisitorConfiguration : IEntityTypeConfiguration<Visitor>
         builder.Property(e => e.QrCodeUrl).HasMaxLength(500);
         builder.Property(e => e.IsRecurring).HasDefaultValue(false);
         builder.Property(e => e.RecurringSchedule).HasColumnType("jsonb");
-        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue("Authorized");
+        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(30).HasDefaultValue(VisitorStatus.Authorized);
         builder.Property(e => e.Notes).HasColumnType("text");
         builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");

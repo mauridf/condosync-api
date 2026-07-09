@@ -1,4 +1,5 @@
 ﻿using CondoSync.Core.Entities;
+using CondoSync.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -51,6 +52,33 @@ public class CondoSyncDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("public");
 
+        // Ignorar DomainEvent (usado apenas em memória via AggregateRoot)
+        modelBuilder.Ignore<DomainEvent>();
+
+        // Converter nomes de propriedades para snake_case
+        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entity.GetProperties())
+            {
+                property.SetColumnName(ToSnakeCase(property.Name));
+            }
+
+            foreach (var key in entity.GetKeys())
+            {
+                key.SetName(ToSnakeCase(key.GetName() ?? ""));
+            }
+
+            foreach (var foreignKey in entity.GetForeignKeys())
+            {
+                foreignKey.SetConstraintName(ToSnakeCase(foreignKey.GetConstraintName() ?? ""));
+            }
+
+            foreach (var index in entity.GetIndexes())
+            {
+                index.SetDatabaseName(ToSnakeCase(index.GetDatabaseName() ?? ""));
+            }
+        }
+
         // Aplicar configurações de cada entidade
         modelBuilder.ApplyConfiguration(new Configurations.CondominiumConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.UserConfiguration());
@@ -74,5 +102,11 @@ public class CondoSyncDbContext : DbContext
         modelBuilder.ApplyConfiguration(new Configurations.CondominiumSettingsConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.OutboxMessageConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.EventStoreEntryConfiguration());
+    }
+
+    private static string ToSnakeCase(string input)
+    {
+        return string.Concat(input.Select((c, i) =>
+            i > 0 && char.IsUpper(c) ? "_" + c.ToString() : c.ToString())).ToLowerInvariant();
     }
 }

@@ -17,7 +17,7 @@ CREATE TABLE admin.super_admins (
     name VARCHAR(200) NOT NULL,
     email VARCHAR(200) UNIQUE NOT NULL,
     password_hash VARCHAR(300) NOT NULL,
-    role VARCHAR(30) NOT NULL DEFAULT 'super_admin',
+    role VARCHAR(30) NOT NULL DEFAULT 'SuperAdmin',
     email_verified_at TIMESTAMPTZ,
     last_login_at TIMESTAMPTZ,
     last_password_change_at TIMESTAMPTZ,
@@ -49,8 +49,8 @@ CREATE TABLE public.condominiums (
     phone VARCHAR(20),
     email VARCHAR(200),
     logo_url VARCHAR(500),
-    subscription_plan VARCHAR(50) DEFAULT 'trial',
-    subscription_status VARCHAR(30) DEFAULT 'trial',
+    subscription_plan VARCHAR(50) DEFAULT 'Trial',
+    subscription_status VARCHAR(30) DEFAULT 'Trial',
     subscription_expires_at TIMESTAMPTZ,
     trial_ends_at TIMESTAMPTZ,
     max_units INTEGER DEFAULT 0,
@@ -69,7 +69,7 @@ CREATE TABLE public.condominiums (
 CREATE INDEX idx_condominiums_slug ON public.condominiums(slug) WHERE deleted_at IS NULL;
 CREATE INDEX idx_condominiums_cnpj ON public.condominiums(cnpj) WHERE cnpj IS NOT NULL;
 CREATE INDEX idx_condominiums_status ON public.condominiums(subscription_status);
-CREATE INDEX idx_condominiums_trial ON public.condominiums(trial_ends_at) WHERE subscription_plan = 'trial';
+CREATE INDEX idx_condominiums_trial ON public.condominiums(trial_ends_at) WHERE subscription_plan = 'Trial';
 
 -- Tabela: users
 CREATE TABLE public.users (
@@ -81,7 +81,7 @@ CREATE TABLE public.users (
     phone VARCHAR(20),
     cpf VARCHAR(14),
     avatar_url VARCHAR(500),
-    role VARCHAR(30) NOT NULL DEFAULT 'resident',
+    role VARCHAR(30) NOT NULL DEFAULT 'Resident',
     email_verified_at TIMESTAMPTZ,
     last_login_at TIMESTAMPTZ,
     last_password_change_at TIMESTAMPTZ,
@@ -110,14 +110,14 @@ CREATE TABLE public.units (
     block VARCHAR(50),
     number VARCHAR(50) NOT NULL,
     floor VARCHAR(20),
-    type VARCHAR(50) NOT NULL DEFAULT 'apartment',
+    type VARCHAR(50) NOT NULL DEFAULT 'Apartment',
     area DECIMAL(10,2),
     bedrooms INTEGER DEFAULT 0,
     bathrooms INTEGER DEFAULT 0,
     parking_spots INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
     is_rented BOOLEAN DEFAULT false,
-    occupancy_status VARCHAR(30) DEFAULT 'vacant',
+    occupancy_status VARCHAR(30) DEFAULT 'Vacant',
     monthly_fee DECIMAL(10,2),
     late_fee_percentage DECIMAL(5,2) DEFAULT 2.00,
     interest_percentage DECIMAL(5,2) DEFAULT 0.033,
@@ -218,7 +218,7 @@ CREATE TABLE public.bookings (
     booking_date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    status VARCHAR(30) DEFAULT 'pending',
+    status VARCHAR(30) DEFAULT 'Pending',
     title VARCHAR(300),
     description TEXT,
     guests_count INTEGER DEFAULT 0,
@@ -303,8 +303,8 @@ CREATE TABLE public.tickets (
     description TEXT NOT NULL,
     category VARCHAR(100) NOT NULL,
     subcategory VARCHAR(100),
-    priority VARCHAR(20) DEFAULT 'normal',
-    status VARCHAR(30) DEFAULT 'open',
+    priority VARCHAR(20) DEFAULT 'Normal',
+    status VARCHAR(30) DEFAULT 'Open',
     sla_hours INTEGER DEFAULT 48,
     sla_breached_at TIMESTAMPTZ,
     resolution TEXT,
@@ -362,7 +362,7 @@ CREATE TABLE public.bills (
     late_fee_percentage DECIMAL(5,2) DEFAULT 2.00,
     late_interest_daily DECIMAL(5,2) DEFAULT 0.033,
     max_interest_months INTEGER DEFAULT 12,
-    status VARCHAR(30) DEFAULT 'pending',
+    status VARCHAR(30) DEFAULT 'Pending',
     payment_date DATE,
     payment_amount DECIMAL(10,2),
     payment_method VARCHAR(50),
@@ -382,7 +382,7 @@ CREATE TABLE public.bills (
 CREATE INDEX idx_bills_unit_date ON public.bills(unit_id, due_date);
 CREATE INDEX idx_bills_status ON public.bills(condominium_id, status);
 CREATE INDEX idx_bills_reference ON public.bills(condominium_id, reference_month);
-CREATE INDEX idx_bills_overdue ON public.bills(condominium_id, status) WHERE status = 'overdue';
+CREATE INDEX idx_bills_overdue ON public.bills(condominium_id, status) WHERE status = 'Overdue';
 
 -- Tabela: visitors
 CREATE TABLE public.visitors (
@@ -408,7 +408,7 @@ CREATE TABLE public.visitors (
     qr_code_url VARCHAR(500),
     is_recurring BOOLEAN DEFAULT false,
     recurring_schedule JSONB,
-    status VARCHAR(30) DEFAULT 'authorized',
+    status VARCHAR(30) DEFAULT 'Authorized',
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -514,7 +514,7 @@ INSERT INTO admin.super_admins (name, email, password_hash, role, email_verified
 SELECT 
     'Super Admin',
     'admin@condosync.com.br',
-    '$' || '2a' || '$' || '12' || '$' || 'LJ3m4ys3GZfnYMz8kVsKaOGqPqXEQfWvKdN1o8nOdLzCm4vzKrZqG',
-    'super_admin',
+    '$' || '2a' || '$' || '12' || '$' || 'vlXN4sORabLgEyzpUtwFmOZrV0eqI.k0jbSAeuzBP.w6pc/hnxD1i',
+    'SuperAdmin',
     NOW()
-WHERE NOT EXISTS (SELECT 1 FROM admin.super_admins WHERE role = 'super_admin');
+WHERE NOT EXISTS (SELECT 1 FROM admin.super_admins WHERE role = 'SuperAdmin');
