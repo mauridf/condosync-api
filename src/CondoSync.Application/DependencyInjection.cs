@@ -13,6 +13,9 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<AuthService>();
 
+        // Serviços administrativos
+        services.AddScoped<AdminService>();
+
         return services;
     }
 }
