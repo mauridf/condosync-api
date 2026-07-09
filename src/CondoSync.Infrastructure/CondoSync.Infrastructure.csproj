@@ -14,7 +14,6 @@
     <Folder Include="External\Notification\" />
     <Folder Include="External\Payment\" />
     <Folder Include="External\Storage\" />
-    <Folder Include="Tenant\" />
   </ItemGroup>
 
   <ItemGroup>

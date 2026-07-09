@@ -6,6 +6,8 @@ namespace CondoSync.Infrastructure.Data;
 
 public class CondoSyncDbContext : DbContext
 {
+    private readonly Tenant.TenantInterceptor? _tenantInterceptor;
+
     // Entidades principais
     public DbSet<Condominium> Condominiums { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
@@ -32,8 +34,17 @@ public class CondoSyncDbContext : DbContext
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
     public DbSet<EventStoreEntry> EventStore { get; set; } = null!;
 
-    public CondoSyncDbContext(DbContextOptions<CondoSyncDbContext> options) : base(options)
+    public CondoSyncDbContext(DbContextOptions<CondoSyncDbContext> options, Tenant.TenantInterceptor? tenantInterceptor = null) : base(options)
     {
+                _tenantInterceptor = tenantInterceptor;
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (_tenantInterceptor != null)
+        {
+            optionsBuilder.AddInterceptors(_tenantInterceptor);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

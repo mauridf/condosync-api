@@ -82,6 +82,8 @@ try
     // 3. Configurar Pipeline HTTP
     // ==========================================
 
+    // Middleware de Tenant (primeiro na pipeline, antes da autenticação)
+    app.UseMiddleware<TenantMiddleware>();
     // Middleware de exceção global (primeiro na pipeline)
     app.UseMiddleware<GlobalExceptionMiddleware>();
 
