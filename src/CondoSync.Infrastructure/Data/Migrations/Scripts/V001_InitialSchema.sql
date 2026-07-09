@@ -514,7 +514,7 @@ INSERT INTO admin.super_admins (name, email, password_hash, role, email_verified
 SELECT 
     'Super Admin',
     'admin@condosync.com.br',
-    '$2a$12$LJ3m4ys3GZfnYMz8kVsKaOGqPqXEQfWvKdN1o8nOdLzCm4vzKrZqG',
+    '$' || '2a' || '$' || '12' || '$' || 'LJ3m4ys3GZfnYMz8kVsKaOGqPqXEQfWvKdN1o8nOdLzCm4vzKrZqG',
     'super_admin',
     NOW()
 WHERE NOT EXISTS (SELECT 1 FROM admin.super_admins WHERE role = 'super_admin');

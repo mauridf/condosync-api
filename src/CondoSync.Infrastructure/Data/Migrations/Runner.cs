@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DbUp;
+using DbUp.Engine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -32,6 +33,9 @@ public class DatabaseMigrator
                 scriptName => scriptName.StartsWith("CondoSync.Infrastructure.Data.Migrations.Scripts.V"))
             .WithTransaction()
             .LogToConsole()
+            .LogScriptOutput()
+            .WithExecutionTimeout(TimeSpan.FromMinutes(5))
+            .WithVariablesDisabled()
             .Build();
 
         var result = upgrader.PerformUpgrade();
