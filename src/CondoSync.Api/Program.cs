@@ -1,5 +1,6 @@
 using CondoSync.Api.Extensions;
 using CondoSync.Api.Middlewares;
+using CondoSync.Infrastructure;
 using FluentValidation;
 using Scalar.AspNetCore;
 using Serilog;
@@ -55,6 +56,9 @@ try
 
     // Health Checks
     builder.Services.AddCondoSyncHealthChecks(builder.Configuration);
+
+    // Infrastructure (DbContexts, Repositories, UnitOfWork)
+    builder.Services.AddInfrastructure(builder.Configuration);
 
     // AutoMapper
     builder.Services.AddAutoMapper(typeof(CondoSync.Application.Common.Mappings.CondominiumProfile).Assembly);
