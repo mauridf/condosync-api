@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CondoSync.Core.Interfaces;
+using CondoSync.Infrastructure.Data;
+using CondoSync.Infrastructure.Data.Migrations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using CondoSync.Infrastructure.Data;
-using CondoSync.Core.Interfaces;
 
 namespace CondoSync.Infrastructure;
 
@@ -22,6 +23,9 @@ public static class DependencyInjection
             var connectionString = DatabaseConfig.GetConnectionString(configuration);
             DatabaseConfig.ConfigureNpgsql(options, connectionString);
         });
+
+        // Registrar DbUp Migrator
+        services.AddTransient<DatabaseMigrator>();
 
         // Registrar serviços de infraestrutura
         services.AddScoped(typeof(IRepository<>), typeof(Repositories.GenericRepository<>));

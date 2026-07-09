@@ -1,6 +1,7 @@
 using CondoSync.Api.Extensions;
 using CondoSync.Api.Middlewares;
 using CondoSync.Infrastructure;
+using CondoSync.Infrastructure.Data.Migrations;
 using FluentValidation;
 using Scalar.AspNetCore;
 using Serilog;
@@ -162,11 +163,32 @@ try
     // Health check rápido (liveness)
     app.MapGet("/healthz", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
+    // ==========================================
+    // 4. Executar Migrations via DbUp
+    // ==========================================
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            var migrator = services.GetRequiredService<DatabaseMigrator>();
+            migrator.RunMigrations();
+
+            Log.Information("✅ Banco de dados pronto");
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "❌ Erro crítico ao executar migrations");
+            throw;
+        }
+    }
+
     // Mapear controllers
     app.MapControllers();
 
     // ==========================================
-    // 4. Iniciar aplicação
+    // 5. Iniciar aplicação
     // ==========================================
 
     Log.Information("🚀 CondoSync API iniciando no ambiente {Environment}...",

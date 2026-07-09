@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Folder Include="Data\EventStore\" />
-    <Folder Include="Data\Migrations\" />
+    <Folder Include="Data\Migrations\Scripts\" />
     <Folder Include="Data\Outbox\" />
     <Folder Include="External\Cache\" />
     <Folder Include="External\MessageBus\" />
@@ -20,11 +20,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
+    <PackageReference Include="dbup-postgresql" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.9" />
     <PackageReference Include="Minio" Version="7.0.0" />
@@ -34,6 +31,10 @@
     <PackageReference Include="Quartz.Serialization.Json" Version="3.18.2" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
     <PackageReference Include="StackExchange.Redis" Version="3.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\Scripts\*.sql" />
   </ItemGroup>
 
   <PropertyGroup>
