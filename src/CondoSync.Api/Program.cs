@@ -80,6 +80,9 @@ try
     // FluentValidation
     builder.Services.AddValidatorsFromAssembly(typeof(CondoSync.Application.Common.DTOs.ErrorResponse).Assembly);
 
+    // Background Services
+    builder.Services.AddHostedService<CondoSync.Api.BackgroundServices.NotificationWorker>();
+
     // Configurar porta
     builder.WebHost.UseUrls("http://localhost:5000");
 

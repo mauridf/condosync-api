@@ -2,6 +2,7 @@
 using CondoSync.Core.Interfaces;
 using CondoSync.Infrastructure.Data;
 using CondoSync.Infrastructure.Data.Migrations;
+using CondoSync.Infrastructure.External.Notification;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,6 +78,20 @@ public static class DependencyInjection
         });
 
         services.AddScoped<INotificationService, External.Notification.NotificationDispatcherService>();
+
+        services.AddSingleton<IEmailService>(sp =>
+        {
+            var host = configuration["Email:Host"] ?? "localhost";
+            var port = int.Parse(configuration["Email:Port"] ?? "587");
+            var username = configuration["Email:Username"] ?? "";
+            var password = configuration["Email:Password"] ?? "";
+            var fromAddress = configuration["Email:FromAddress"] ?? "noreply@condosync.com.br";
+            var useSsl = bool.Parse(configuration["Email:UseSsl"] ?? "true");
+            var logger = sp.GetRequiredService<ILogger<External.Notification.SmtpEmailService>>();
+            return new External.Notification.SmtpEmailService(host, port, username, password, fromAddress, useSsl, logger);
+        });
+
+        services.AddSingleton<IPushNotificationService, External.Notification.StubPushNotificationService>();
 
         return services;
     }
