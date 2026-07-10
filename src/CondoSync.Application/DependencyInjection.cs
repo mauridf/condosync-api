@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<NotificationTemplateService>();
         services.AddScoped<CommonAreaService>();
         services.AddScoped<UnitInvitationService>();
+        services.AddScoped<ReportService>();
 
         return services;
     }
