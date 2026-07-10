@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<NoticeService>();
         services.AddScoped<PollService>();
         services.AddScoped<CondoDashboardService>();
+        services.AddScoped<DocumentService>();
 
         return services;
     }
