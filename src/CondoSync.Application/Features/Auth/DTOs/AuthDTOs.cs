@@ -59,3 +59,30 @@ public record ChangePasswordRequest(
     string CurrentPassword,
     string NewPassword
 );
+
+public record VerifyEmailRequest(
+    string Token
+);
+
+public record Enable2FaRequest(
+    string Code
+);
+
+public record Disable2FaRequest(
+    string Code
+);
+
+public record Verify2FaRequest(
+    string Code
+);
+
+public record TwoFactorSetupResponse(
+    string Secret,
+    string QrCodeUrl
+);
+
+public record UpdateProfileRequest(
+    string? Name,
+    string? Phone = null,
+    string? AvatarUrl = null
+);

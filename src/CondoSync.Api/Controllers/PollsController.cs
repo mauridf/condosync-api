@@ -14,9 +14,26 @@ public class PollsController : BaseController
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] string? status = null,
+        [FromQuery] string? category = null,
         [FromQuery] int page = 1, [FromQuery] int perPage = 20)
     {
-        var polls = await _pollService.GetPollsAsync(status, page, perPage);
+        var polls = await _pollService.GetPollsAsync(status, category, page, perPage);
+        return Ok(new { success = true, data = polls, meta = new { page, perPage } });
+    }
+
+    [HttpGet("enquetes")]
+    public async Task<IActionResult> GetEnquetes([FromQuery] string? status = null,
+        [FromQuery] int page = 1, [FromQuery] int perPage = 20)
+    {
+        var polls = await _pollService.GetEnquetesAsync(status, page, perPage);
+        return Ok(new { success = true, data = polls, meta = new { page, perPage } });
+    }
+
+    [HttpGet("votacoes")]
+    public async Task<IActionResult> GetVotacoes([FromQuery] string? status = null,
+        [FromQuery] int page = 1, [FromQuery] int perPage = 20)
+    {
+        var polls = await _pollService.GetVotacoesAsync(status, page, perPage);
         return Ok(new { success = true, data = polls, meta = new { page, perPage } });
     }
 
@@ -36,7 +53,8 @@ public class PollsController : BaseController
         var poll = await _pollService.CreatePollAsync(
             userId.Value, request.Title, request.Options,
             request.StartsAt, request.EndsAt, request.PollType,
-            request.IsAnonymous, request.RequiresUnitVote, request.Description);
+            request.IsAnonymous, request.RequiresUnitVote, request.Description,
+            request.VotingRule, request.IsBinding, request.VoterSlug);
 
         return CreatedAtAction(nameof(GetById), new { id = poll.Id }, new { success = true, data = poll });
     }
@@ -75,6 +93,13 @@ public class PollsController : BaseController
     {
         var results = await _pollService.GetResultsAsync(id);
         return results == null ? NotFound() : Ok(new { success = true, data = results });
+    }
+
+    [HttpGet("{id:guid}/tally")]
+    public async Task<IActionResult> GetTally(Guid id)
+    {
+        var result = await _pollService.GetTallyResultAsync(id);
+        return result == null ? NotFound() : Ok(new { success = true, data = result });
     }
 
     [HttpDelete("{id:guid}")]

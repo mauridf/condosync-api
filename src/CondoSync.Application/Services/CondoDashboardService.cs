@@ -134,4 +134,58 @@ public class CondoDashboardService
 
         return new { Activities = activities };
     }
+
+    public async Task<object> GetAdvancedStatsAsync()
+    {
+        var tenantId = GetCurrentTenantId();
+
+        var tickets = await _ticketRepository.FindAsync(t => t.CondominiumId == tenantId);
+        var ticketList = tickets.ToList();
+        var ticketCategories = ticketList
+            .GroupBy(t => t.Category)
+            .Select(g => new { Category = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count);
+
+        var bookings = await _bookingRepository.FindAsync(b => b.CondominiumId == tenantId);
+        var bookingList = bookings.ToList();
+        var bookingsByMonth = bookingList
+            .GroupBy(b => $"{b.BookingDate.Year}-{b.BookingDate.Month:D2}")
+            .Select(g => new { Month = g.Key, Count = g.Count() })
+            .OrderBy(x => x.Month);
+
+        var bills = await _billRepository.FindAsync(b => b.CondominiumId == tenantId);
+        var billList = bills.ToList();
+        var paymentRate = billList.Any()
+            ? Math.Round((double)billList.Count(b => b.Status == BillStatus.Paid) / billList.Count * 100, 1)
+            : 0;
+
+        var overdueRate = billList.Any()
+            ? Math.Round((double)billList.Count(b => b.Status == BillStatus.Overdue) / billList.Count * 100, 1)
+            : 0;
+
+        var totalBilled = billList.Sum(b => b.TotalAmount);
+        var totalReceived = billList.Where(b => b.Status == BillStatus.Paid).Sum(b => b.PaymentAmount ?? 0);
+        var receiptRate = totalBilled > 0 ? Math.Round((double)totalReceived / (double)totalBilled * 100, 1) : 0;
+
+        var violations = bookingList
+            .GroupBy(b => b.ServiceId)
+            .Select(g => new { ServiceId = g.Key, NoShowCount = g.Count(b => b.Status == BookingStatus.NoShow) })
+            .OrderByDescending(x => x.NoShowCount);
+
+        return new
+        {
+            TicketCategories = ticketCategories,
+            BookingsByMonth = bookingsByMonth,
+            Financial = new
+            {
+                PaymentRate = paymentRate,
+                OverdueRate = overdueRate,
+                TotalBilled = totalBilled,
+                TotalReceived = totalReceived,
+                ReceiptRate = receiptRate
+            },
+            NoShowViolations = violations,
+            Timestamp = DateTime.UtcNow
+        };
+    }
 }

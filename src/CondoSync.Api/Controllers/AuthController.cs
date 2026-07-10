@@ -151,4 +151,121 @@ public class AuthController : ControllerBase
     {
         return Ok(new { success = true, message = "Auth API funcionando", timestamp = DateTime.UtcNow });
     }
+
+    private Guid? GetUserIdFromClaims()
+    {
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (Guid.TryParse(userIdClaim, out var userId))
+            return userId;
+        return null;
+    }
+
+    /// <summary>
+    /// Altera a senha do usuário autenticado
+    /// </summary>
+    [HttpPost("change-password")]
+    [Authorize(AuthenticationSchemes = "Tenant")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var userId = GetUserIdFromClaims();
+        if (userId == null) return Unauthorized();
+
+        var result = await _authService.ChangePasswordAsync(userId.Value, request.CurrentPassword, request.NewPassword);
+        return result ? Ok(new { success = true }) : BadRequest(new { success = false, message = "Senha atual incorreta" });
+    }
+
+    /// <summary>
+    /// Solicita token de reset de senha
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        await _authService.ForgotPasswordAsync(request.Email);
+        return Ok(new { success = true, message = "Se o email existir, um link de redefinição será enviado" });
+    }
+
+    /// <summary>
+    /// Redefine a senha usando token
+    /// </summary>
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await _authService.ResetPasswordAsync(request.Token, request.NewPassword);
+        return result ? Ok(new { success = true }) : BadRequest(new { success = false, message = "Token inválido ou expirado" });
+    }
+
+    /// <summary>
+    /// Verifica o email do usuário
+    /// </summary>
+    [HttpPost("verify-email")]
+    [Authorize(AuthenticationSchemes = "Tenant")]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request)
+    {
+        var userId = GetUserIdFromClaims();
+        if (userId == null) return Unauthorized();
+
+        var result = await _authService.VerifyEmailAsync(userId.Value, request.Token);
+        return result ? Ok(new { success = true }) : BadRequest(new { success = false, message = "Token inválido" });
+    }
+
+    /// <summary>
+    /// Configura 2FA (gera secret + QR code)
+    /// </summary>
+    [HttpPost("2fa/setup")]
+    [Authorize(AuthenticationSchemes = "Tenant")]
+    public async Task<IActionResult> Setup2Fa()
+    {
+        var userId = GetUserIdFromClaims();
+        if (userId == null) return Unauthorized();
+
+        var result = await _authService.Setup2FaAsync(userId.Value);
+        if (result == null) return NotFound();
+
+        var (secret, qrCodeUrl) = result.Value;
+        return Ok(new { success = true, data = new { secret, qrCodeUrl } });
+    }
+
+    /// <summary>
+    /// Ativa 2FA
+    /// </summary>
+    [HttpPost("2fa/enable")]
+    [Authorize(AuthenticationSchemes = "Tenant")]
+    public async Task<IActionResult> Enable2Fa([FromBody] Enable2FaRequest request)
+    {
+        var userId = GetUserIdFromClaims();
+        if (userId == null) return Unauthorized();
+
+        var result = await _authService.Enable2FaAsync(userId.Value, request.Code);
+        return result ? Ok(new { success = true }) : BadRequest(new { success = false, message = "Código inválido" });
+    }
+
+    /// <summary>
+    /// Desativa 2FA
+    /// </summary>
+    [HttpPost("2fa/disable")]
+    [Authorize(AuthenticationSchemes = "Tenant")]
+    public async Task<IActionResult> Disable2Fa([FromBody] Disable2FaRequest request)
+    {
+        var userId = GetUserIdFromClaims();
+        if (userId == null) return Unauthorized();
+
+        var result = await _authService.Disable2FaAsync(userId.Value, request.Code);
+        return result ? Ok(new { success = true }) : BadRequest(new { success = false, message = "Código inválido" });
+    }
+
+    /// <summary>
+    /// Atualiza o perfil do usuário autenticado
+    /// </summary>
+    [HttpPut("me")]
+    [Authorize(AuthenticationSchemes = "Tenant")]
+    public async Task<IActionResult> UpdateCurrentUser([FromBody] UpdateProfileRequest request)
+    {
+        var userId = GetUserIdFromClaims();
+        if (userId == null) return Unauthorized();
+
+        var result = await _authService.UpdateProfileAsync(userId.Value, request.Name, request.Phone, request.AvatarUrl);
+        return result ? Ok(new { success = true }) : NotFound();
+    }
 }

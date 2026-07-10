@@ -24,4 +24,11 @@ public class DashboardController : BaseController
         var activity = await _dashboardService.GetRecentActivityAsync(count);
         return Ok(new { success = true, data = activity });
     }
+
+    [HttpGet("advanced")]
+    public async Task<IActionResult> GetAdvancedStats()
+    {
+        var stats = await _dashboardService.GetAdvancedStatsAsync();
+        return Ok(new { success = true, data = stats });
+    }
 }

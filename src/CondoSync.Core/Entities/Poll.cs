@@ -17,6 +17,13 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
     public bool IsMandatory { get; private set; }
     public bool RequiresUnitVote { get; private set; }
 
+    // Votação (vs Enquete)
+    public VotingRule? VotingRule { get; private set; }
+    public bool IsBinding { get; private set; }
+    public Guid? ElectedCandidateId { get; private set; }
+    public Guid? ApprovedOptionId { get; private set; }
+    public string? VoterSlug { get; private set; }
+
     // Opções
     public string Options { get; private set; }
 
@@ -41,16 +48,19 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
         Guid condominiumId,
         Guid createdBy,
         string title,
-        string options, // JSON array: [{"id":"opt1","text":"Sim"},...]
+        string options,
         DateTime startsAt,
         DateTime endsAt,
         PollType pollType = PollType.Single,
         bool isAnonymous = false,
         bool requiresUnitVote = false,
-        string? description = null)
+        string? description = null,
+        VotingRule? votingRule = null,
+        bool isBinding = false,
+        string? voterSlug = null)
     {
         if (string.IsNullOrWhiteSpace(title))
-            throw new DomainException("Título da enquete não pode ser vazio");
+            throw new DomainException("Título não pode ser vazio");
 
         if (startsAt >= endsAt)
             throw new DomainException("Data de início deve ser anterior ao fim");
@@ -67,6 +77,9 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
             IsAnonymous = isAnonymous,
             IsMandatory = false,
             RequiresUnitVote = requiresUnitVote,
+            VotingRule = votingRule,
+            IsBinding = isBinding,
+            VoterSlug = voterSlug,
             StartsAt = startsAt,
             EndsAt = endsAt,
             Status = PollStatus.Draft,
@@ -117,6 +130,26 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
         TotalVotes++;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void ApproveOption(Guid optionId)
+    {
+        if (Status != PollStatus.Closed && Status != PollStatus.Active)
+            throw new DomainException("Apenas enquetes ativas ou fechadas podem ter opção aprovada");
+
+        ApprovedOptionId = optionId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ElectCandidate(Guid optionId)
+    {
+        if (Status != PollStatus.Closed && Status != PollStatus.Active)
+            throw new DomainException("Apenas enquetes ativas ou fechadas podem eleger candidato");
+
+        ElectedCandidateId = optionId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool IsVotacao => VotingRule.HasValue;
 
     public void SoftDelete()
     {

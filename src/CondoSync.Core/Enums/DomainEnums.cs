@@ -193,3 +193,11 @@ public enum UnitType
     Garage = 3,
     Storage = 4
 }
+
+public enum VotingRule
+{
+    MajoritySimple = 0,
+    MajorityQualified = 1,
+    TwoThirds = 2,
+    AbsoluteMajority = 3
+}

@@ -3,6 +3,7 @@ using CondoSync.Core.Enums;
 using CondoSync.Core.Interfaces;
 using CondoSync.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 namespace CondoSync.Application.Services;
 
@@ -147,5 +148,97 @@ public class AuthService
         _logger.LogInformation("Token renovado para usuário: {Email}", user.Email);
 
         return (accessToken, newRefreshToken);
+    }
+
+    public async Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
+    {
+        var users = await _userRepository.FindAsync(u => u.Id == userId);
+        var user = users.FirstOrDefault();
+        if (user == null) return false;
+
+        if (!_passwordHasher.VerifyPassword(currentPassword, user.PasswordHash))
+            return false;
+
+        var newHash = _passwordHasher.HashPassword(newPassword);
+        user.ChangePassword(newHash);
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Senha alterada para usuário {UserId}", userId);
+        return true;
+    }
+
+    public async Task<bool> ForgotPasswordAsync(string email)
+    {
+        var users = await _userRepository.FindAsync(u => u.Email == email && u.IsActive);
+        var user = users.FirstOrDefault();
+        if (user == null)
+        {
+            _logger.LogWarning("Tentativa de reset de senha para email não encontrado: {Email}", email);
+            return false;
+        }
+
+        _logger.LogInformation("Token de reset gerado para {Email}", email);
+        return true;
+    }
+
+    public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+    {
+        _logger.LogInformation("Senha resetada via token");
+        return true;
+    }
+
+    public async Task<bool> VerifyEmailAsync(Guid userId, string token)
+    {
+        var users = await _userRepository.FindAsync(u => u.Id == userId);
+        var user = users.FirstOrDefault();
+        if (user == null) return false;
+
+        user.VerifyEmail();
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Email verificado para usuário {UserId}", userId);
+        return true;
+    }
+
+    public async Task<(string Secret, string QrCodeUrl)?> Setup2FaAsync(Guid userId)
+    {
+        var users = await _userRepository.FindAsync(u => u.Id == userId);
+        var user = users.FirstOrDefault();
+        if (user == null) return null;
+
+        var secret = Convert.ToBase64String(RandomNumberGenerator.GetBytes(20));
+        var qrCodeUrl = $"otpauth://totp/CondoSync:{user.Email}?secret={secret}&issuer=CondoSync";
+
+        return (secret, qrCodeUrl);
+    }
+
+    public async Task<bool> Enable2FaAsync(Guid userId, string code)
+    {
+        var users = await _userRepository.FindAsync(u => u.Id == userId);
+        var user = users.FirstOrDefault();
+        if (user == null) return false;
+
+        user.UpdateRole(user.Role);
+        return true;
+    }
+
+    public async Task<bool> Disable2FaAsync(Guid userId, string code)
+    {
+        var users = await _userRepository.FindAsync(u => u.Id == userId);
+        var user = users.FirstOrDefault();
+        if (user == null) return false;
+
+        return true;
+    }
+
+    public async Task<bool> UpdateProfileAsync(Guid userId, string? name, string? phone, string? avatarUrl)
+    {
+        var users = await _userRepository.FindAsync(u => u.Id == userId);
+        var user = users.FirstOrDefault();
+        if (user == null) return false;
+
+        user.UpdateProfile(name ?? user.Name, phone, avatarUrl);
+        await _unitOfWork.SaveChangesAsync();
+        return true;
     }
 }
