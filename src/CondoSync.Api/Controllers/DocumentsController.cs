@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CondoSync.Application.Features.Documents.DTOs;
 using CondoSync.Application.Services;
+using CondoSync.Api.Controllers.DTOs;
 
 namespace CondoSync.Api.Controllers;
 
@@ -34,18 +35,20 @@ public class DocumentsController : BaseController
 
     [HttpPost]
     [RequestSizeLimit(50 * 1024 * 1024)]
-    public async Task<IActionResult> Upload(
-        [FromForm] IFormFile file,
-        [FromForm] UploadDocumentRequest request)
+    public async Task<IActionResult> Upload([FromForm] DocumentUploadForm form)
     {
-        if (file == null || file.Length == 0)
+        if (form.File == null || form.File.Length == 0)
             return BadRequest(new { success = false, message = "Arquivo obrigatório" });
 
         var userId = GetUserId() ?? throw new UnauthorizedAccessException("Usuário não autenticado");
 
-        using var stream = file.OpenReadStream();
+        var request = new UploadDocumentRequest(
+            form.Name, form.Description, form.DocumentType, form.Visibility,
+            form.DocumentDate, form.ExpiresAt, form.RequiresSignature);
+
+        using var stream = form.File.OpenReadStream();
         var document = await _documentService.UploadDocumentAsync(
-            userId, stream, file.FileName, file.ContentType, (int)file.Length, request);
+            userId, stream, form.File.FileName, form.File.ContentType, (int)form.File.Length, request);
         return CreatedAtAction(nameof(GetById), new { id = document.Id }, new { success = true, data = document });
     }
 
