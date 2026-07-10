@@ -11,6 +11,7 @@ namespace CondoSync.Application.Services;
 public class ResidentService
 {
     private readonly IRepository<Resident> _residentRepo;
+    private readonly IRepository<User> _userRepo;
     private readonly IRepository<Unit> _unitRepo;
     private readonly IRepository<CondominiumSettings> _settingsRepo;
     private readonly ITenantProvider _tenantProvider;
@@ -19,6 +20,7 @@ public class ResidentService
 
     public ResidentService(
         IRepository<Resident> residentRepo,
+        IRepository<User> userRepo,
         IRepository<Unit> unitRepo,
         IRepository<CondominiumSettings> settingsRepo,
         ITenantProvider tenantProvider,
@@ -26,6 +28,7 @@ public class ResidentService
         ILogger<ResidentService> logger)
     {
         _residentRepo = residentRepo;
+        _userRepo = userRepo;
         _unitRepo = unitRepo;
         _settingsRepo = settingsRepo;
         _tenantProvider = tenantProvider;
@@ -304,5 +307,41 @@ public class ResidentService
         await _unitOfWork.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<(Resident resident, string? oldRole, string? newRole)> UpdateResidentRoleAsync(Guid id, string newRole)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(id);
+        if (resident == null || resident.CondominiumId != tenantId)
+            throw new InvalidOperationException("RESIDENT_NOT_FOUND");
+
+        if (!Enum.TryParse<UserRole>(newRole, true, out var roleEnum))
+            throw new InvalidOperationException("INVALID_ROLE");
+
+        if (roleEnum is UserRole.Visitor)
+            throw new InvalidOperationException("ROLE_NOT_ALLOWED");
+
+        var oldRole = string.Empty;
+
+        if (resident.UserId.HasValue)
+        {
+            var users = await _userRepo.FindAsync(u => u.Id == resident.UserId && u.CondominiumId == tenantId);
+            var user = users.FirstOrDefault();
+            if (user != null)
+            {
+                oldRole = user.Role.ToString();
+                user.UpdateRole(roleEnum);
+                _userRepo.Update(user);
+            }
+        }
+
+        _residentRepo.Update(resident);
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Role do morador {ResidentId} alterada de {OldRole} para {NewRole}",
+            id, oldRole, newRole);
+
+        return (resident, string.IsNullOrEmpty(oldRole) ? null : oldRole, newRole);
     }
 }

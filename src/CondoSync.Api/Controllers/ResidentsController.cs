@@ -110,6 +110,29 @@ public class ResidentsController : BaseController
         return Ok(new { success = true, message });
     }
 
+    [HttpPut("{id:guid}/role")]
+    [Authorize(Policy = "RequireSyndic")]
+    public async Task<IActionResult> UpdateRole(Guid id, [FromBody] UpdateResidentRoleRequest request)
+    {
+        try
+        {
+            var (resident, oldRole, newRole) = await _residentService.UpdateResidentRoleAsync(id, request.Role);
+            return Ok(new { success = true, data = new { resident.Id, oldRole, newRole } });
+        }
+        catch (InvalidOperationException ex)
+        {
+            var code = ex.Message;
+            var message = code switch
+            {
+                "RESIDENT_NOT_FOUND" => "Morador não encontrado",
+                "INVALID_ROLE" => "Cargo inválido. Valores válidos: CondoAdmin, SubAdmin, Employee, Owner, Tenant, Resident",
+                "ROLE_NOT_ALLOWED" => "Este cargo não pode ser atribuído manualmente",
+                _ => ex.Message
+            };
+            return BadRequest(new { success = false, error = new { code, message } });
+        }
+    }
+
     // ─── Veículos ──────────────────────────────────────────────────
 
     [HttpPost("{id:guid}/vehicles")]

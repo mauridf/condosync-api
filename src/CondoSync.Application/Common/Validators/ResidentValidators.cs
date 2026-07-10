@@ -1,5 +1,6 @@
 using FluentValidation;
 using CondoSync.Application.Features.Residents.DTOs;
+using CondoSync.Core.Enums;
 
 namespace CondoSync.Application.Common.Validators;
 
@@ -36,6 +37,17 @@ public class ToggleAccessRequestValidator : AbstractValidator<ToggleAccessReques
     public ToggleAccessRequestValidator()
     {
         RuleFor(x => x.GrantAccess).NotNull();
+    }
+}
+
+public class UpdateResidentRoleRequestValidator : AbstractValidator<UpdateResidentRoleRequest>
+{
+    public UpdateResidentRoleRequestValidator()
+    {
+        RuleFor(x => x.Role).NotEmpty().MaximumLength(30)
+            .Must(v => Enum.TryParse<UserRole>(v, true, out var r)
+                && r is not UserRole.Visitor)
+            .WithMessage("Cargo inválido. Valores válidos: CondoAdmin, SubAdmin, Employee, Owner, Tenant, Resident");
     }
 }
 

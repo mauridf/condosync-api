@@ -112,6 +112,23 @@ public static class ServiceCollectionExtensions
 
         services.AddAuthorization(options =>
         {
+            // Tenant scheme policies
+            options.AddPolicy("RequireSyndic", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("role", "CondoAdmin"));
+
+            options.AddPolicy("RequireSubAdminOrAbove", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("role", "CondoAdmin", "SubAdmin"));
+
+            options.AddPolicy("RequireEmployeeOrAbove", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("role", "CondoAdmin", "SubAdmin", "Employee"));
+
+            options.AddPolicy("RequireResidentOrAbove", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("role", "CondoAdmin", "SubAdmin", "Employee", "Owner", "Tenant", "Resident"));
+
             options.AddPolicy("CondominiumAccess", policy =>
                 policy.RequireAssertion(context =>
                 {
@@ -119,6 +136,7 @@ public static class ServiceCollectionExtensions
                     return !string.IsNullOrEmpty(tenantId);
                 }));
 
+            // Admin scheme policies
             options.AddPolicy("SuperAdminOnly", policy =>
                 policy.RequireRole("super_admin"));
 

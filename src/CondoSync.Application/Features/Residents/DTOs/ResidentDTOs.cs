@@ -104,3 +104,7 @@ public record ResidentDetailResponse(
 public record ToggleAccessRequest(
     bool GrantAccess
 );
+
+public record UpdateResidentRoleRequest(
+    string Role
+);
