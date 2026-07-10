@@ -39,6 +39,9 @@ public class Visitor : AggregateRoot<Guid>, ITenantEntity
     public bool IsRecurring { get; private set; }
     public string? RecurringSchedule { get; private set; }
 
+    // Guest List
+    public Guid? GuestListId { get; private set; }
+
     // Status
     public VisitorStatus Status { get; private set; }
 
@@ -62,7 +65,8 @@ public class Visitor : AggregateRoot<Guid>, ITenantEntity
         TimeOnly? expectedEntryTime = null,
         TimeOnly? expectedExitTime = null,
         string? companyName = null,
-        string? notes = null)
+        string? notes = null,
+        Guid? guestListId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Nome do visitante não pode ser vazio");
@@ -85,6 +89,7 @@ public class Visitor : AggregateRoot<Guid>, ITenantEntity
             ExpectedExitTime = expectedExitTime,
             CompanyName = companyName,
             Notes = notes,
+            GuestListId = guestListId,
             Status = VisitorStatus.Authorized,
             AuthorizationCode = GenerateAuthorizationCode(),
             CreatedAt = DateTime.UtcNow,
@@ -158,6 +163,12 @@ public class Visitor : AggregateRoot<Guid>, ITenantEntity
         Name = name;
         if (phone != null) Phone = phone;
         if (notes != null) Notes = notes;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void LinkToGuestList(Guid guestListId)
+    {
+        GuestListId = guestListId;
         UpdatedAt = DateTime.UtcNow;
     }
 }

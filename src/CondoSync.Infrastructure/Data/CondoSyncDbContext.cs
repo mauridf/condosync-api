@@ -30,6 +30,7 @@ public class CondoSyncDbContext : DbContext
     public DbSet<ActivityLog> ActivityLogs { get; set; } = null!;
     public DbSet<UnitInvitation> UnitInvitations { get; set; } = null!;
     public DbSet<CondominiumSettings> CondominiumSettings { get; set; } = null!;
+    public DbSet<GuestList> GuestLists { get; set; } = null!;
 
     // Infraestrutura
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
@@ -100,6 +101,7 @@ public class CondoSyncDbContext : DbContext
         modelBuilder.ApplyConfiguration(new Configurations.ActivityLogConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.UnitInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.CondominiumSettingsConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.GuestListConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.OutboxMessageConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.EventStoreEntryConfiguration());
     }
