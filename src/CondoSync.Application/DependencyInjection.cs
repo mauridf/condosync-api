@@ -1,5 +1,8 @@
 ﻿using CondoSync.Application.Common.Interfaces;
+using CondoSync.Application.EventHandlers;
 using CondoSync.Application.Services;
+using CondoSync.Core.Events;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CondoSync.Application;
@@ -30,6 +33,17 @@ public static class DependencyInjection
         services.AddScoped<CommonAreaService>();
         services.AddScoped<UnitInvitationService>();
         services.AddScoped<ReportService>();
+        services.AddScoped<EventStoreService>();
+
+        // Event Handlers (Domain Events -> ActivityLog)
+        services.AddScoped<INotificationHandler<BookingCreatedEvent>, BookingCreatedEventHandler>();
+        services.AddScoped<INotificationHandler<BookingApprovedEvent>, BookingApprovedEventHandler>();
+        services.AddScoped<INotificationHandler<BillGeneratedEvent>, BillGeneratedEventHandler>();
+        services.AddScoped<INotificationHandler<BillPaidEvent>, BillPaidEventHandler>();
+        services.AddScoped<INotificationHandler<TicketOpenedEvent>, TicketOpenedEventHandler>();
+        services.AddScoped<INotificationHandler<TicketResolvedEvent>, TicketResolvedEventHandler>();
+        services.AddScoped<INotificationHandler<NoticePublishedEvent>, NoticePublishedEventHandler>();
+        services.AddScoped<INotificationHandler<FineCalculatedEvent>, FineCalculatedEventHandler>();
 
         return services;
     }
