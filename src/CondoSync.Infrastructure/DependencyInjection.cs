@@ -93,6 +93,14 @@ public static class DependencyInjection
 
         services.AddSingleton<IPushNotificationService, External.Notification.StubPushNotificationService>();
 
+        // Payment Gateway (Stub para desenvolvimento; trocar por implementação real em produção)
+        var gatewayProvider = configuration["PaymentGateway:Provider"] ?? "Stub";
+        if (gatewayProvider.Equals("Stub", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddScoped<IPaymentGateway, External.Payment.StubPaymentGateway>();
+        }
+        // else: registrar gateway real (ex: AddHttpClient<IAsaasPaymentGateway, AsaasPaymentGateway>)
+
         return services;
     }
 }

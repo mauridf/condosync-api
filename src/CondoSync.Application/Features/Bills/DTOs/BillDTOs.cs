@@ -105,3 +105,25 @@ public record BillSummaryResponse(
     decimal TotalPaid,
     decimal TotalPending
 );
+
+// ─── Payment Gateway ──────────────────────────────────────────
+
+public record PaymentBoletoResponse(
+    Guid BillId,
+    string BoletoUrl,
+    string BoletoCode,
+    string DueDate,
+    decimal Amount
+);
+
+public record PaymentPixResponse(
+    Guid BillId,
+    string PixCode,
+    string PixQrCodeUrl,
+    decimal Amount
+);
+
+public record ProcessPaymentRequest(
+    decimal Amount,
+    string PaymentMethod
+);

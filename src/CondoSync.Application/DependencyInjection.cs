@@ -34,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<UnitInvitationService>();
         services.AddScoped<ReportService>();
         services.AddScoped<EventStoreService>();
+        services.AddScoped<PaymentService>();
 
         // Event Handlers (Domain Events -> ActivityLog)
         services.AddScoped<INotificationHandler<BookingCreatedEvent>, BookingCreatedEventHandler>();
