@@ -4,7 +4,7 @@ using CondoSync.Core.Interfaces;
 namespace CondoSync.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/{slug}")]
+[Route("api/v1/{slug}/[controller]")]
 public abstract class BaseController : ControllerBase
 {
     protected Guid CurrentTenantId
