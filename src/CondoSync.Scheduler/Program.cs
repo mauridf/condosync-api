@@ -74,6 +74,34 @@ try
             .ForJob(archiveJobKey)
             .WithIdentity("ArchiveOldActivityLogs-Trigger")
             .WithCronSchedule("0 0 3 * * ?"));
+
+        var fineJobKey = new JobKey("BillFineCalculation");
+        q.AddJob<BillFineCalculationJob>(opts => opts.WithIdentity(fineJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(fineJobKey)
+            .WithIdentity("BillFineCalculation-Trigger")
+            .WithCronSchedule("0 0 2 * * ?"));
+
+        var reminderJobKey = new JobKey("SendPaymentReminders");
+        q.AddJob<SendPaymentRemindersJob>(opts => opts.WithIdentity(reminderJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(reminderJobKey)
+            .WithIdentity("SendPaymentReminders-Trigger")
+            .WithCronSchedule("0 0 8 * * ?"));
+
+        var guestListJobKey = new JobKey("CleanupExpiredGuestLists");
+        q.AddJob<CleanupExpiredGuestListsJob>(opts => opts.WithIdentity(guestListJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(guestListJobKey)
+            .WithIdentity("CleanupExpiredGuestLists-Trigger")
+            .WithCronSchedule("0 0 1 * * ?"));
+
+        var visitorJobKey = new JobKey("ExpireVisitors");
+        q.AddJob<ExpireVisitorsJob>(opts => opts.WithIdentity(visitorJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(visitorJobKey)
+            .WithIdentity("ExpireVisitors-Trigger")
+            .WithCronSchedule("0 0 * * * ?"));
     });
 
     builder.Services.AddQuartzHostedService(opts =>
@@ -83,9 +111,9 @@ try
 
     var app = builder.Build();
 
-    Log.Information("CondoSync Scheduler iniciando no ambiente {Environment}...",
+    Log.Information("CondoSync Scheduler iniciando no ambiente {Environment} com 10 jobs...",
         app.Services.GetRequiredService<IHostEnvironment>().EnvironmentName);
-    Log.Information("Jobs registrados: ProcessOutboxMessages (1min), ExpirePastBookings (5min), CompletePastBookings (5min), ExpireUnitInvitations (1h), CheckTicketSlaBreach (5min), ArchiveOldActivityLogs (diario 3h)");
+    Log.Information("Jobs registrados: ProcessOutboxMessages (1min), ExpirePastBookings (5min), CompletePastBookings (5min), ExpireUnitInvitations (1h), CheckTicketSlaBreach (5min), ArchiveOldActivityLogs (diario 3h), BillFineCalculation (diario 2h), SendPaymentReminders (diario 8h), CleanupExpiredGuestLists (diario 1h), ExpireVisitors (1h)");
 
     await app.RunAsync();
 }
