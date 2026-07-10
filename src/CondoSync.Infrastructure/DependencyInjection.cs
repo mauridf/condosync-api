@@ -5,6 +5,7 @@ using CondoSync.Infrastructure.Data.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace CondoSync.Infrastructure;
 
@@ -46,12 +47,36 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, CondoSync.Application.Services.TokenService>();
         services.AddScoped<CondoSync.Application.Services.AuthService>();
 
-        // TODO: Registrar serviços externos quando implementados
-        // services.AddScoped<IStorageService, MinioStorageService>();
-        // services.AddScoped<ICacheService, RedisCacheService>();
-        // services.AddScoped<IMessageBus, RabbitMqMessageBus>();
-        // services.AddScoped<IPaymentGateway, PaymentGatewayService>();
-        // services.AddScoped<INotificationService, NotificationDispatcherService>();
+        // Serviços externos
+        services.AddSingleton<ICacheService>(sp =>
+        {
+            var connectionString = configuration["Redis:ConnectionString"]
+                ?? throw new InvalidOperationException("Redis:ConnectionString não configurada");
+            var logger = sp.GetRequiredService<ILogger<External.Cache.RedisCacheService>>();
+            return new External.Cache.RedisCacheService(connectionString, logger);
+        });
+
+        services.AddSingleton<IMessageBus>(sp =>
+        {
+            var host = configuration["RabbitMq:Host"] ?? "localhost";
+            var port = int.Parse(configuration["RabbitMq:Port"] ?? "5672");
+            var username = configuration["RabbitMq:Username"] ?? "guest";
+            var password = configuration["RabbitMq:Password"] ?? "guest";
+            var logger = sp.GetRequiredService<ILogger<External.MessageBus.RabbitMqMessageBus>>();
+            return new External.MessageBus.RabbitMqMessageBus(host, port, username, password, logger);
+        });
+
+        services.AddScoped<IStorageService>(sp =>
+        {
+            var endpoint = configuration["MinIo:Endpoint"] ?? "localhost:9000";
+            var accessKey = configuration["MinIo:AccessKey"] ?? "minioadmin";
+            var secretKey = configuration["MinIo:SecretKey"] ?? "minioadmin";
+            var bucketName = configuration["MinIo:BucketName"] ?? "condosync";
+            var logger = sp.GetRequiredService<ILogger<External.Storage.MinioStorageService>>();
+            return new External.Storage.MinioStorageService(endpoint, accessKey, secretKey, bucketName, logger);
+        });
+
+        services.AddScoped<INotificationService, External.Notification.NotificationDispatcherService>();
 
         return services;
     }
