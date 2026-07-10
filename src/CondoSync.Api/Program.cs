@@ -66,7 +66,7 @@ try
     builder.Services.AddApplication();
 
     // AutoMapper
-    builder.Services.AddAutoMapper(typeof(CondoSync.Application.Common.Mappings.CondominiumProfile).Assembly);
+    builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(CondoSync.Application.Common.Mappings.CondominiumProfile).Assembly));
 
     // MediatR
     builder.Services.AddMediatR(cfg =>
@@ -123,8 +123,7 @@ try
             .WithTitle("CondoSync API")
             .WithTheme(ScalarTheme.Purple)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-            .WithPreferredScheme("Bearer")
-            .WithDarkModeToggle(true)
+            .AddPreferredSecuritySchemes("Bearer")
             .WithOpenApiRoutePattern("/swagger/v1/swagger.json");
     });
 

@@ -26,7 +26,7 @@ try
 
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
-    builder.Services.AddAutoMapper(typeof(CondoSync.Application.Common.Mappings.CondominiumProfile).Assembly);
+    builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(CondoSync.Application.Common.Mappings.CondominiumProfile).Assembly));
 
     builder.Services.AddQuartz(q =>
     {

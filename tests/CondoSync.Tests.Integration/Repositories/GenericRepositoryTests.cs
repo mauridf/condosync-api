@@ -10,8 +10,7 @@ namespace CondoSync.Tests.Integration.Repositories;
 
 public class GenericRepositoryTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithImage("postgres:16-alpine")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:16-alpine")
         .WithDatabase("condosync_test")
         .WithUsername("postgres")
         .WithPassword("postgres")

@@ -51,7 +51,9 @@ public class NotificationWorker : BackgroundService
         {
             try
             {
-                var channels = JsonSerializer.Deserialize<List<string>>(notification.Channels) ?? [];
+                var channels = notification.Channels is not null
+                    ? JsonSerializer.Deserialize<List<string>>(notification.Channels) ?? []
+                    : [];
 
                 if (channels.Contains("email"))
                 {

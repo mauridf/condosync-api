@@ -40,14 +40,16 @@ public abstract class AggregateRoot<TId>
         return Id?.GetHashCode() ?? 0;
     }
 
-    public static bool operator ==(AggregateRoot<TId> left, AggregateRoot<TId> right)
+    public static bool operator ==(AggregateRoot<TId>? left, AggregateRoot<TId>? right)
     {
-        return Equals(left, right);
+        if (left is null && right is null) return true;
+        if (left is null || right is null) return false;
+        return left.Equals(right);
     }
 
-    public static bool operator !=(AggregateRoot<TId> left, AggregateRoot<TId> right)
+    public static bool operator !=(AggregateRoot<TId>? left, AggregateRoot<TId>? right)
     {
-        return !Equals(left, right);
+        return !(left == right);
     }
 }
 
