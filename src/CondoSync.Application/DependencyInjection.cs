@@ -18,8 +18,10 @@ public static class DependencyInjection
         services.AddScoped<UnitService>();
         services.AddScoped<ResidentService>();
         services.AddScoped<ServiceManagementService>();
+        services.AddScoped<BookingService>();
         services.AddScoped<ResidentService>();
         services.AddScoped<ServiceManagementService>();
+        services.AddScoped<BookingService>();
 
         return services;
     }
