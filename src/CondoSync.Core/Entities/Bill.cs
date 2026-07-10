@@ -12,8 +12,8 @@ public class Bill : AggregateRoot<Guid>, ITenantEntity
 
     // Identificação
     public string? BillNumber { get; private set; }
-    public string Description { get; private set; }
-    public string ReferenceMonth { get; private set; }
+    public string Description { get; private set; } = default!;
+    public string ReferenceMonth { get; private set; } = default!;
 
     // Valores
     public decimal BaseAmount { get; private set; }

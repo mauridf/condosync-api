@@ -12,7 +12,7 @@ public class Resident : AggregateRoot<Guid>, ITenantEntity
     public ResidentType ResidentType { get; private set; }
 
     // Dados pessoais
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public string? Email { get; private set; }
     public string? Phone { get; private set; }
     public string? Cpf { get; private set; }

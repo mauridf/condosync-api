@@ -8,7 +8,7 @@ public class Notification : AggregateRoot<Guid>, ITenantEntity
     public Guid CondominiumId { get; private set; }
     public Guid UserId { get; private set; }
 
-    public string Title { get; private set; }
+    public string Title { get; private set; } = default!;
     public string? Body { get; private set; }
     public CondoSync.Core.Enums.NotificationType Type { get; private set; }
 

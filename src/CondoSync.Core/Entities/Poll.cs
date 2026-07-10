@@ -8,7 +8,7 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
     public Guid CondominiumId { get; private set; }
     public Guid CreatedBy { get; private set; }
 
-    public string Title { get; private set; }
+    public string Title { get; private set; } = default!;
     public string? Description { get; private set; }
 
     // Configuração
@@ -25,7 +25,7 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
     public string? VoterSlug { get; private set; }
 
     // Opções
-    public string Options { get; private set; }
+    public string Options { get; private set; } = default!;
 
     // Datas
     public DateTime StartsAt { get; private set; }
@@ -33,7 +33,7 @@ public class Poll : AggregateRoot<Guid>, ITenantEntity
 
     // Resultados
     public int TotalVotes { get; private set; }
-    public string ResultsVisibility { get; private set; }
+    public string ResultsVisibility { get; private set; } = default!;
 
     // Status
     public PollStatus Status { get; private set; }

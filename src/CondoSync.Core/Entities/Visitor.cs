@@ -10,7 +10,7 @@ public class Visitor : AggregateRoot<Guid>, ITenantEntity
     public Guid? ResidentId { get; private set; }
 
     // Dados
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public string? Document { get; private set; }
     public string? DocumentType { get; private set; }
     public string? VehiclePlate { get; private set; }

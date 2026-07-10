@@ -2,11 +2,11 @@
 
 public class OutboxMessage : AggregateRoot<Guid>
 {
-    public string Type { get; private set; }
-    public string Content { get; private set; }
+    public string Type { get; private set; } = default!;
+    public string Content { get; private set; } = default!;
     public string? Headers { get; private set; }
 
-    public string Status { get; private set; }
+    public string Status { get; private set; } = default!;
     public int RetryCount { get; private set; }
     public int MaxRetries { get; private set; }
     public string? LastError { get; private set; }

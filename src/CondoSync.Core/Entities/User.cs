@@ -6,9 +6,9 @@ public class User : AggregateRoot<Guid>, ITenantEntity
 {
     public Guid CondominiumId { get; private set; }
 
-    public string Name { get; private set; }
-    public string Email { get; private set; }
-    public string PasswordHash { get; private set; }
+    public string Name { get; private set; } = default!;
+    public string Email { get; private set; } = default!;
+    public string PasswordHash { get; private set; } = default!;
     public string? Phone { get; private set; }
     public string? Cpf { get; private set; }
     public string? AvatarUrl { get; private set; }

@@ -4,9 +4,9 @@ namespace CondoSync.Core.Entities;
 
 public class Condominium : AggregateRoot<Guid>
 {
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public string? Cnpj { get; private set; }
-    public string Slug { get; private set; }
+    public string Slug { get; private set; } = default!;
     public string? Address { get; private set; }
     public string? City { get; private set; }
     public string? State { get; private set; }
@@ -24,11 +24,11 @@ public class Condominium : AggregateRoot<Guid>
     // Configurações
     public int MaxUnits { get; private set; }
     public int MaxResidentsPerUnit { get; private set; }
-    public string Timezone { get; private set; }
-    public string Language { get; private set; }
+    public string Timezone { get; private set; } = default!;
+    public string Language { get; private set; } = default!;
 
     // Módulos habilitados
-    public List<string> EnabledModules { get; private set; }
+    public List<string> EnabledModules { get; private set; } = default!;
 
     // Customização
     public string? Settings { get; private set; }

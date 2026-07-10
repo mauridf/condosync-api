@@ -6,11 +6,11 @@ public class Service : AggregateRoot<Guid>, ITenantEntity
 {
     public Guid CondominiumId { get; private set; }
 
-    public string Name { get; private set; }
-    public string Slug { get; private set; }
+    public string Name { get; private set; } = default!;
+    public string Slug { get; private set; } = default!;
     public string? Description { get; private set; }
     public string? Icon { get; private set; }
-    public string Category { get; private set; }
+    public string Category { get; private set; } = default!;
 
     // Configuração
     public ServiceType ServiceType { get; private set; }

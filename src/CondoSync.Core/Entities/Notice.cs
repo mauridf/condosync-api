@@ -9,13 +9,13 @@ public class Notice : AggregateRoot<Guid>, ITenantEntity
     public Guid CondominiumId { get; private set; }
     public Guid AuthorId { get; private set; }
 
-    public string Title { get; private set; }
-    public string Content { get; private set; }
+    public string Title { get; private set; } = default!;
+    public string Content { get; private set; } = default!;
     public string? Summary { get; private set; }
     public NoticeCategory Category { get; private set; }
 
     // Visibilidade
-    public string Visibility { get; private set; }
+    public string Visibility { get; private set; } = default!;
     public string? TargetUnits { get; private set; }
 
     // Destaque

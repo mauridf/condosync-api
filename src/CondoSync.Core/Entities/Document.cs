@@ -8,14 +8,14 @@ public class Document : AggregateRoot<Guid>, ITenantEntity
     public Guid CondominiumId { get; private set; }
     public Guid UploadedBy { get; private set; }
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public string? Description { get; private set; }
     public CondoSync.Core.Enums.DocumentType DocumentType { get; private set; }
 
     // Arquivo
-    public string FileName { get; private set; }
-    public string FilePath { get; private set; }
-    public string ContentType { get; private set; }
+    public string FileName { get; private set; } = default!;
+    public string FilePath { get; private set; } = default!;
+    public string ContentType { get; private set; } = default!;
     public int FileSize { get; private set; }
 
     // Versão
@@ -23,7 +23,7 @@ public class Document : AggregateRoot<Guid>, ITenantEntity
     public Guid? PreviousVersionId { get; private set; }
 
     // Visibilidade
-    public string Visibility { get; private set; }
+    public string Visibility { get; private set; } = default!;
 
     // Datas
     public DateOnly? DocumentDate { get; private set; }

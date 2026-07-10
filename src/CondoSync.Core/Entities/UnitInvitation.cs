@@ -7,7 +7,7 @@ public class UnitInvitation : AggregateRoot<Guid>, ITenantEntity
     public Guid CondominiumId { get; private set; }
     public Guid UnitId { get; private set; }
 
-    public string InvitationCode { get; private set; }
+    public string InvitationCode { get; private set; } = default!;
     public string? InvitationUrl { get; private set; }
 
     // Validade
@@ -21,10 +21,10 @@ public class UnitInvitation : AggregateRoot<Guid>, ITenantEntity
     public string? RecipientPhone { get; private set; }
 
     // Tipo de acesso
-    public string AccessType { get; private set; }
+    public string AccessType { get; private set; } = default!;
 
     // Status
-    public string Status { get; private set; }
+    public string Status { get; private set; } = default!;
 
     public Guid CreatedBy { get; private set; }
     public DateTime CreatedAt { get; private set; }

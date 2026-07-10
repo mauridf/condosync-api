@@ -12,10 +12,10 @@ public class Ticket : AggregateRoot<Guid>, ITenantEntity
     public Guid? AssignedTo { get; private set; }
 
     // Identificação
-    public string TicketNumber { get; private set; }
-    public string Title { get; private set; }
-    public string Description { get; private set; }
-    public string Category { get; private set; }
+    public string TicketNumber { get; private set; } = default!;
+    public string Title { get; private set; } = default!;
+    public string Description { get; private set; } = default!;
+    public string Category { get; private set; } = default!;
     public string? Subcategory { get; private set; }
 
     // Prioridade

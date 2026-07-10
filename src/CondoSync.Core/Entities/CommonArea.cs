@@ -6,9 +6,9 @@ public class CommonArea : AggregateRoot<Guid>, ITenantEntity
 {
     public Guid CondominiumId { get; private set; }
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public string? Description { get; private set; }
-    public string Type { get; private set; }
+    public string Type { get; private set; } = default!;
 
     // Capacidade
     public int? Capacity { get; private set; }
@@ -27,7 +27,7 @@ public class CommonArea : AggregateRoot<Guid>, ITenantEntity
 
     // Status
     public bool IsActive { get; private set; }
-    public string MaintenanceStatus { get; private set; }
+    public string MaintenanceStatus { get; private set; } = default!;
 
     // Manutenção programada
     public string? ScheduledMaintenance { get; private set; }

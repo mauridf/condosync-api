@@ -7,7 +7,7 @@ public class TicketMessage : AggregateRoot<Guid>
     public Guid TicketId { get; private set; }
     public Guid SenderId { get; private set; }
 
-    public string Message { get; private set; }
+    public string Message { get; private set; } = default!;
     public bool IsInternal { get; private set; }
     public bool IsSystemMessage { get; private set; }
     public string? Attachments { get; private set; }

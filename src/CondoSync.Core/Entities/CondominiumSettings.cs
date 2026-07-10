@@ -31,8 +31,8 @@ public class CondominiumSettings : AggregateRoot<Guid>, ITenantEntity
     public string? SmsProvider { get; private set; }
 
     // Aparência
-    public string PrimaryColor { get; private set; }
-    public string SecondaryColor { get; private set; }
+    public string PrimaryColor { get; private set; } = default!;
+    public string SecondaryColor { get; private set; } = default!;
     public string? LogoUrl { get; private set; }
     public string? FaviconUrl { get; private set; }
     public string? CustomCss { get; private set; }

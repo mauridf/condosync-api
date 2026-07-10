@@ -3,11 +3,11 @@
 public class EventStoreEntry
 {
     public long Id { get; private set; }
-    public string AggregateType { get; private set; }
+    public string AggregateType { get; private set; } = default!;
     public Guid AggregateId { get; private set; }
     public int Version { get; private set; }
-    public string EventType { get; private set; }
-    public string EventData { get; private set; }
+    public string EventType { get; private set; } = default!;
+    public string EventData { get; private set; } = default!;
     public string? Metadata { get; private set; }
     public DateTime CreatedAt { get; private set; }
 

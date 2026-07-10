@@ -8,7 +8,7 @@ public class Unit : AggregateRoot<Guid>, ITenantEntity
 
     // Identificação
     public string? Block { get; private set; }
-    public string Number { get; private set; }
+    public string Number { get; private set; } = default!;
     public string? Floor { get; private set; }
     public UnitType Type { get; private set; }
 

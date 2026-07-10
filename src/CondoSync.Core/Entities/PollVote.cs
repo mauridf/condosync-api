@@ -9,7 +9,7 @@ public class PollVote : AggregateRoot<Guid>
     public Guid? ResidentId { get; private set; }
     public Guid? UserId { get; private set; }
 
-    public List<Guid> SelectedOptions { get; private set; }
+    public List<Guid> SelectedOptions { get; private set; } = default!;
 
     public DateTime VotedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }

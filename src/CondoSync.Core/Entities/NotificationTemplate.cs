@@ -4,13 +4,13 @@ public class NotificationTemplate : AggregateRoot<Guid>, ITenantEntity
 {
     public Guid CondominiumId { get; private set; }
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public string? Description { get; private set; }
-    public string TitleTemplate { get; private set; }
-    public string BodyTemplate { get; private set; }
-    public string NotificationType { get; private set; }
+    public string TitleTemplate { get; private set; } = default!;
+    public string BodyTemplate { get; private set; } = default!;
+    public string NotificationType { get; private set; } = default!;
 
-    public string Channel { get; private set; }
+    public string Channel { get; private set; } = default!;
     public bool IsActive { get; private set; }
 
     public DateTime CreatedAt { get; private set; }

@@ -9,7 +9,7 @@ public class GuestList : AggregateRoot<Guid>, ITenantEntity
     public Guid? BookingId { get; private set; }
     public Guid? UnitId { get; private set; }
 
-    public string Title { get; private set; }
+    public string Title { get; private set; } = default!;
     public string? Description { get; private set; }
     public DateOnly EventDate { get; private set; }
     public TimeOnly? StartTime { get; private set; }
@@ -17,7 +17,7 @@ public class GuestList : AggregateRoot<Guid>, ITenantEntity
     public int MaxGuests { get; private set; }
     public bool RequiresQrCode { get; private set; }
 
-    public string Status { get; private set; }
+    public string Status { get; private set; } = default!;
 
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
