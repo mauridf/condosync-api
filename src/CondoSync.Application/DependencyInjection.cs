@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<NoticeService>();
         services.AddScoped<PollService>();
         services.AddScoped<CondoDashboardService>();
+        services.AddScoped<ResidentDashboardService>();
         services.AddScoped<DocumentService>();
         services.AddScoped<NotificationTemplateService>();
         services.AddScoped<CommonAreaService>();
