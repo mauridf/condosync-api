@@ -35,7 +35,7 @@ public class TicketService
 
     public async Task<List<Ticket>> GetTicketsAsync(
         string? status = null, string? priority = null, string? category = null,
-        Guid? assignedTo = null, int page = 1, int perPage = 20)
+        Guid? assignedTo = null, Guid? unitId = null, int page = 1, int perPage = 20)
     {
         var tenantId = GetCurrentTenantId();
         var tickets = await _ticketRepository.FindAsync(t => t.CondominiumId == tenantId);
@@ -59,6 +59,9 @@ public class TicketService
 
         if (assignedTo.HasValue)
             query = query.Where(t => t.AssignedTo == assignedTo.Value);
+
+        if (unitId.HasValue)
+            query = query.Where(t => t.UnitId == unitId.Value);
 
         return query
             .OrderByDescending(t => t.Priority)

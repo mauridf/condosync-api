@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using CondoSync.Application.Features.Tickets.DTOs;
 using CondoSync.Application.Services;
+using CondoSync.Core.Entities;
+using CondoSync.Core.Interfaces;
 
 namespace CondoSync.Api.Controllers;
 
@@ -9,10 +11,21 @@ namespace CondoSync.Api.Controllers;
 public class TicketsController : BaseController
 {
     private readonly TicketService _ticketService;
+    private readonly IRepository<Resident> _residentRepo;
 
-    public TicketsController(TicketService ticketService)
+    public TicketsController(TicketService ticketService, IRepository<Resident> residentRepo)
     {
         _ticketService = ticketService;
+        _residentRepo = residentRepo;
+    }
+
+    private async Task<Guid?> GetMyUnitId()
+    {
+        var userId = GetUserId();
+        if (userId == null) return null;
+        var residents = await _residentRepo.FindAsync(r =>
+            r.UserId == userId && r.IsActive);
+        return residents.Select(r => (Guid?)r.UnitId).FirstOrDefault();
     }
 
     [HttpGet]
@@ -20,7 +33,7 @@ public class TicketsController : BaseController
         [FromQuery] string? category = null, [FromQuery] Guid? assignedTo = null,
         [FromQuery] int page = 1, [FromQuery] int perPage = 20)
     {
-        var tickets = await _ticketService.GetTicketsAsync(status, priority, category, assignedTo, page, perPage);
+        var tickets = await _ticketService.GetTicketsAsync(status, priority, category, assignedTo, page: page, perPage: perPage);
         return Ok(new { success = true, data = tickets, meta = new { page, perPage } });
     }
 
@@ -29,6 +42,17 @@ public class TicketsController : BaseController
     {
         var ticket = await _ticketService.GetTicketByIdAsync(id);
         return ticket == null ? NotFound() : Ok(new { success = true, data = ticket });
+    }
+
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyTickets()
+    {
+        var unitId = await GetMyUnitId();
+        if (unitId == null)
+            return NotFound(new { success = false, error = new { code = "RESIDENT_NOT_FOUND", message = "Perfil de morador não encontrado" } });
+
+        var tickets = await _ticketService.GetTicketsAsync(unitId: unitId);
+        return Ok(new { success = true, data = tickets });
     }
 
     [HttpPost]

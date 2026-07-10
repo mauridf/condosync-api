@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using CondoSync.Application.Features.Bills.DTOs;
 using CondoSync.Application.Services;
+using CondoSync.Core.Entities;
 using CondoSync.Core.Enums;
+using CondoSync.Core.Interfaces;
 
 namespace CondoSync.Api.Controllers;
 
@@ -11,13 +13,24 @@ public class BillsController : BaseController
 {
     private readonly BillService _billService;
     private readonly PaymentService _paymentService;
+    private readonly IRepository<Resident> _residentRepo;
     private readonly ILogger<BillsController> _logger;
 
-    public BillsController(BillService billService, PaymentService paymentService, ILogger<BillsController> logger)
+    public BillsController(BillService billService, PaymentService paymentService, IRepository<Resident> residentRepo, ILogger<BillsController> logger)
     {
         _billService = billService;
         _paymentService = paymentService;
+        _residentRepo = residentRepo;
         _logger = logger;
+    }
+
+    private async Task<Guid?> GetMyUnitId()
+    {
+        var userId = GetUserId();
+        if (userId == null) return null;
+        var residents = await _residentRepo.FindAsync(r =>
+            r.UserId == userId && r.IsActive);
+        return residents.Select(r => (Guid?)r.UnitId).FirstOrDefault();
     }
 
     [HttpGet]
@@ -56,6 +69,22 @@ public class BillsController : BaseController
             bill.InstallmentNumber, bill.TotalInstallments,
             bill.BoletoUrl, bill.BoletoCode, bill.PixCode, bill.PixQrCodeUrl,
             bill.CreatedAt, bill.UpdatedAt);
+        return Ok(new { success = true, data = response });
+    }
+
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyBills()
+    {
+        var unitId = await GetMyUnitId();
+        if (unitId == null)
+            return NotFound(new { success = false, error = new { code = "RESIDENT_NOT_FOUND", message = "Perfil de morador não encontrado" } });
+
+        var bills = await _billService.GetBillsAsync(unitId: unitId);
+        var response = bills.Select(b => new BillResponse(
+            b.Id, b.UnitId, "", b.BillNumber, b.Description, b.ReferenceMonth,
+            b.BaseAmount, b.TotalAmount, b.FineAmount, b.InterestAmount,
+            b.DueDate.ToDateTime(TimeOnly.MinValue), b.Status.ToString(),
+            b.PaymentDate?.ToDateTime(TimeOnly.MinValue), b.PaymentAmount, b.CreatedAt));
         return Ok(new { success = true, data = response });
     }
 

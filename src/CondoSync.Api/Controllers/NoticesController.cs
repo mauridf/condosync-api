@@ -20,6 +20,15 @@ public class NoticesController : BaseController
         return Ok(new { success = true, data = notices, meta = new { page, perPage } });
     }
 
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyNotices()
+    {
+        var notices = await _noticeService.GetNoticesAsync(page: 1, perPage: 20);
+        var active = notices.Where(n => n.PublishedAt != null &&
+            (n.ExpiresAt == null || n.ExpiresAt > DateTime.UtcNow));
+        return Ok(new { success = true, data = active });
+    }
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
