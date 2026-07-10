@@ -14,11 +14,9 @@ public record CreateResidentRequest(
     string? Profession = null,
     bool IsPrimary = false,
     bool IsEmergencyContact = false,
-    // Proprietário (se locatário)
     string? OwnerName = null,
     string? OwnerPhone = null,
     string? OwnerEmail = null,
-    // Veículos e Pets
     List<VehicleDTO>? Vehicles = null,
     List<PetDTO>? Pets = null
 );
@@ -32,6 +30,7 @@ public record UpdateResidentRequest(
 );
 
 public record VehicleDTO(
+    Guid? Id,
     string Plate,
     string Model,
     string? Color = null,
@@ -39,11 +38,24 @@ public record VehicleDTO(
 );
 
 public record PetDTO(
+    Guid? Id,
     string Name,
     string Species,
     string? Breed = null,
     string? Color = null
 );
+
+public record AddVehicleRequest(string Plate, string Model, string? Color = null, string? Brand = null);
+
+public record UpdateVehicleRequest(string Plate, string Model, string? Color = null, string? Brand = null);
+
+public record AddPetRequest(string Name, string Species, string? Breed = null, string? Color = null);
+
+public record UpdatePetRequest(string Name, string Species, string? Breed = null, string? Color = null);
+
+public record VehicleResponse(Guid Id, string Plate, string Model, string? Color, string? Brand);
+
+public record PetResponse(Guid Id, string Name, string Species, string? Breed, string? Color);
 
 public record ResidentResponse(
     Guid Id,
@@ -83,8 +95,8 @@ public record ResidentDetailResponse(
     string? OwnerEmail,
     DateOnly? MoveInDate,
     DateOnly? MoveOutDate,
-    List<VehicleDTO>? Vehicles,
-    List<PetDTO>? Pets,
+    List<VehicleResponse>? Vehicles,
+    List<PetResponse>? Pets,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );

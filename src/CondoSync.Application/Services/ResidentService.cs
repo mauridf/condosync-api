@@ -184,6 +184,92 @@ public class ResidentService
         return resident;
     }
 
+    public async Task<VehicleEntry?> AddVehicleAsync(Guid residentId, string plate, string model, string? color, string? brand)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(residentId);
+        if (resident == null || resident.CondominiumId != tenantId) return null;
+
+        resident.AddVehicle(plate, model, color, brand);
+        _residentRepo.Update(resident);
+        await _unitOfWork.SaveChangesAsync();
+        return resident.GetVehicles().LastOrDefault();
+    }
+
+    public async Task<bool> RemoveVehicleAsync(Guid residentId, Guid vehicleId)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(residentId);
+        if (resident == null || resident.CondominiumId != tenantId) return false;
+
+        var removed = resident.RemoveVehicle(vehicleId);
+        if (removed)
+        {
+            _residentRepo.Update(resident);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return removed;
+    }
+
+    public async Task<bool> UpdateVehicleAsync(Guid residentId, Guid vehicleId, string plate, string model, string? color, string? brand)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(residentId);
+        if (resident == null || resident.CondominiumId != tenantId) return false;
+
+        var updated = resident.UpdateVehicle(vehicleId, plate, model, color, brand);
+        if (updated)
+        {
+            _residentRepo.Update(resident);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return updated;
+    }
+
+    // ─── Pets ───────────────────────────────────────────────────────────
+
+    public async Task<PetEntry?> AddPetAsync(Guid residentId, string name, string species, string? breed, string? color)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(residentId);
+        if (resident == null || resident.CondominiumId != tenantId) return null;
+
+        resident.AddPet(name, species, breed, color);
+        _residentRepo.Update(resident);
+        await _unitOfWork.SaveChangesAsync();
+        return resident.GetPets().LastOrDefault();
+    }
+
+    public async Task<bool> RemovePetAsync(Guid residentId, Guid petId)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(residentId);
+        if (resident == null || resident.CondominiumId != tenantId) return false;
+
+        var removed = resident.RemovePet(petId);
+        if (removed)
+        {
+            _residentRepo.Update(resident);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return removed;
+    }
+
+    public async Task<bool> UpdatePetAsync(Guid residentId, Guid petId, string name, string species, string? breed, string? color)
+    {
+        var tenantId = GetCurrentTenantId();
+        var resident = await _residentRepo.GetByIdAsync(residentId);
+        if (resident == null || resident.CondominiumId != tenantId) return false;
+
+        var updated = resident.UpdatePet(petId, name, species, breed, color);
+        if (updated)
+        {
+            _residentRepo.Update(resident);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return updated;
+    }
+
     public async Task<bool> DeleteResidentAsync(Guid id)
     {
         var tenantId = GetCurrentTenantId();

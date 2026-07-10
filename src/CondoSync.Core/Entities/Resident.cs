@@ -135,24 +135,92 @@ public class Resident : AggregateRoot<Guid>, ITenantEntity
 
     public void AddVehicle(string plate, string model, string? color = null, string? brand = null)
     {
-        var vehicles = string.IsNullOrEmpty(Vehicles)
-            ? new List<dynamic>()
-            : System.Text.Json.JsonSerializer.Deserialize<List<dynamic>>(Vehicles);
-
-        vehicles!.Add(new { plate, model, color, brand });
+        var vehicles = GetVehicles();
+        vehicles.Add(VehicleEntry.Create(plate, model, color, brand));
         Vehicles = System.Text.Json.JsonSerializer.Serialize(vehicles);
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public bool RemoveVehicle(Guid vehicleId)
+    {
+        var vehicles = GetVehicles();
+        var removed = vehicles.RemoveAll(v => v.Id == vehicleId) > 0;
+        if (removed)
+        {
+            Vehicles = System.Text.Json.JsonSerializer.Serialize(vehicles);
+            UpdatedAt = DateTime.UtcNow;
+        }
+        return removed;
+    }
+
+    public bool UpdateVehicle(Guid vehicleId, string plate, string model, string? color, string? brand)
+    {
+        var vehicles = GetVehicles();
+        var idx = vehicles.FindIndex(v => v.Id == vehicleId);
+        if (idx < 0) return false;
+
+        vehicles[idx] = new VehicleEntry(vehicleId, plate, model, color, brand);
+        Vehicles = System.Text.Json.JsonSerializer.Serialize(vehicles);
+        UpdatedAt = DateTime.UtcNow;
+        return true;
+    }
+
     public void AddPet(string name, string species, string? breed = null, string? color = null)
     {
-        var pets = string.IsNullOrEmpty(Pets)
-            ? new List<dynamic>()
-            : System.Text.Json.JsonSerializer.Deserialize<List<dynamic>>(Pets);
-
-        pets!.Add(new { name, species, breed, color });
+        var pets = GetPets();
+        pets.Add(PetEntry.Create(name, species, breed, color));
         Pets = System.Text.Json.JsonSerializer.Serialize(pets);
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool RemovePet(Guid petId)
+    {
+        var pets = GetPets();
+        var removed = pets.RemoveAll(p => p.Id == petId) > 0;
+        if (removed)
+        {
+            Pets = System.Text.Json.JsonSerializer.Serialize(pets);
+            UpdatedAt = DateTime.UtcNow;
+        }
+        return removed;
+    }
+
+    public bool UpdatePet(Guid petId, string name, string species, string? breed, string? color)
+    {
+        var pets = GetPets();
+        var idx = pets.FindIndex(p => p.Id == petId);
+        if (idx < 0) return false;
+
+        pets[idx] = new PetEntry(petId, name, species, breed, color);
+        Pets = System.Text.Json.JsonSerializer.Serialize(pets);
+        UpdatedAt = DateTime.UtcNow;
+        return true;
+    }
+
+    public List<VehicleEntry> GetVehicles()
+    {
+        if (string.IsNullOrEmpty(Vehicles)) return new();
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<List<VehicleEntry>>(Vehicles) ?? new();
+        }
+        catch
+        {
+            return new();
+        }
+    }
+
+    public List<PetEntry> GetPets()
+    {
+        if (string.IsNullOrEmpty(Pets)) return new();
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<List<PetEntry>>(Pets) ?? new();
+        }
+        catch
+        {
+            return new();
+        }
     }
 
     public void SetAsEmergencyContact()
@@ -186,4 +254,16 @@ public class Resident : AggregateRoot<Guid>, ITenantEntity
         IsActive = false;
         UpdatedAt = DateTime.UtcNow;
     }
+}
+
+public record VehicleEntry(Guid Id, string Plate, string Model, string? Color, string? Brand)
+{
+    public static VehicleEntry Create(string plate, string model, string? color, string? brand)
+        => new(Guid.NewGuid(), plate, model, color, brand);
+}
+
+public record PetEntry(Guid Id, string Name, string Species, string? Breed, string? Color)
+{
+    public static PetEntry Create(string name, string species, string? breed, string? color)
+        => new(Guid.NewGuid(), name, species, breed, color);
 }
