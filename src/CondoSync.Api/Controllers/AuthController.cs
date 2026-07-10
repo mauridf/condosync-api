@@ -95,11 +95,24 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
     {
-        // O userId será extraído do token expirado ou do refresh token
-        // Por simplicidade, vamos decodificar o refresh token
-        // Em produção, implementar lógica completa de validação
+        var result = await _authService.RefreshTokenAsync(request.RefreshToken);
 
-        return Ok(new { success = true, message = "Refresh token endpoint - implementação completa pendente" });
+        if (result == null)
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                error = new { code = "INVALID_REFRESH_TOKEN", message = "Refresh token inválido ou expirado" }
+            });
+        }
+
+        var (accessToken, refreshToken) = result.Value;
+
+        return Ok(new
+        {
+            success = true,
+            data = new TokenResponse(accessToken, refreshToken)
+        });
     }
 
     /// <summary>

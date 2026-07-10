@@ -19,9 +19,6 @@ public static class DependencyInjection
         services.AddScoped<ResidentService>();
         services.AddScoped<ServiceManagementService>();
         services.AddScoped<BookingService>();
-        services.AddScoped<ResidentService>();
-        services.AddScoped<ServiceManagementService>();
-        services.AddScoped<BookingService>();
         services.AddScoped<BillService>();
         services.AddScoped<VisitorService>();
         services.AddScoped<TicketService>();

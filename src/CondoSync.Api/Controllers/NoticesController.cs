@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CondoSync.Application.Features.Notices.DTOs;
 using CondoSync.Application.Services;
 
 namespace CondoSync.Api.Controllers;
@@ -75,11 +76,6 @@ public class NoticesController : BaseController
     public async Task<IActionResult> AddReaction(Guid id, [FromBody] AddReactionRequest request)
     {
         var result = await _noticeService.AddReactionAsync(id, request.ReactionType);
-        return result ? Ok(new { success = true, message = "Reação adicionada" }) : NotFound();
+            return result ? Ok(new { success = true, message = "Reação adicionada" }) : NotFound();
     }
 }
-
-public record CreateNoticeRequest(string Title, string Content, string Category = "General", bool IsUrgent = false, string? Summary = null, string Visibility = "all");
-public record UpdateNoticeRequest(string Title, string Content, string? Summary = null, string? Category = null, bool? IsUrgent = null);
-public record AddCommentRequest(string Content);
-public record AddReactionRequest(string ReactionType);

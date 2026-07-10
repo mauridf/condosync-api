@@ -121,21 +121,30 @@ public class AuthService
     }
 
     public async Task<(string accessToken, string refreshToken)?> RefreshTokenAsync(
-        Guid userId, string refreshToken)
+        string refreshToken)
     {
-        var user = await _userRepository.GetByIdAsync(userId);
+        var users = await _userRepository.FindAsync(
+            u => u.RefreshToken == refreshToken);
 
-        if (user == null || user.RefreshToken != refreshToken)
+        var user = users.FirstOrDefault();
+
+        if (user == null)
             return null;
 
         if (user.RefreshTokenExpiresAt < DateTime.UtcNow)
+        {
+            user.ClearRefreshToken();
+            await _unitOfWork.SaveChangesAsync();
             return null;
+        }
 
         var (accessToken, newRefreshToken) = _tokenService.GenerateTokenPair(
             user.Id, user.CondominiumId, user.Role.ToString(), user.Name, user.Email);
 
         user.SetRefreshToken(newRefreshToken, DateTime.UtcNow.AddDays(7));
         await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Token renovado para usuário: {Email}", user.Email);
 
         return (accessToken, newRefreshToken);
     }

@@ -34,6 +34,14 @@ public class ValidationException : DomainException
     {
         Errors = errors ?? new List<ValidationError>();
     }
+
+    public ValidationException(string message, Dictionary<string, string[]> errors)
+        : base(message, "VALIDATION_ERROR")
+    {
+        Errors = errors
+            .SelectMany(kv => kv.Value.Select(v => new ValidationError(kv.Key, v)))
+            .ToList();
+    }
 }
 
 public class UnauthorizedException : DomainException

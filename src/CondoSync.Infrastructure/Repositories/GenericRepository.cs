@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using CondoSync.Core.Common;
 using CondoSync.Core.Interfaces;
 using CondoSync.Infrastructure.Data;
 
@@ -65,6 +66,37 @@ public class GenericRepository<T> : IRepository<T> where T : class
     public virtual async Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
         return await _dbSet.CountAsync(predicate, cancellationToken);
+    }
+
+    public virtual IQueryable<T> Query()
+    {
+        return _dbSet.AsQueryable();
+    }
+
+    public virtual async Task<PaginatedResult<T>> GetPagedAsync(
+        int page,
+        int perPage,
+        Expression<Func<T, bool>>? predicate = null,
+        Expression<Func<T, object>>? orderBy = null,
+        bool ascending = true,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet.AsQueryable();
+
+        if (predicate != null)
+            query = query.Where(predicate);
+
+        var total = await query.CountAsync(cancellationToken);
+
+        if (orderBy != null)
+            query = ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
+
+        var data = await query
+            .Skip((page - 1) * perPage)
+            .Take(perPage)
+            .ToListAsync(cancellationToken);
+
+        return PaginatedResult<T>.Create(data, total, page, perPage);
     }
 
     // Método adicional para queries com Dapper (leitura otimizada)

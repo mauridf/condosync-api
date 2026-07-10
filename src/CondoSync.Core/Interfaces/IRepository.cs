@@ -1,4 +1,5 @@
-﻿using CondoSync.Core.Enums;
+﻿using CondoSync.Core.Common;
+using CondoSync.Core.Enums;
 using System.Linq.Expressions;
 
 namespace CondoSync.Core.Interfaces;
@@ -15,6 +16,14 @@ public interface IRepository<T> where T : class
     void RemoveRange(IEnumerable<T> entities);
     Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
     Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<T>> GetPagedAsync(int page, int perPage,
+        Expression<Func<T, bool>>? predicate = null,
+        Expression<Func<T, object>>? orderBy = null,
+        bool ascending = true,
+        CancellationToken cancellationToken = default);
+
+    IQueryable<T> Query();
 }
 
 public interface IUnitOfWork : IDisposable

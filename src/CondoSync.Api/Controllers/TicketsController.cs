@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CondoSync.Application.Features.Tickets.DTOs;
 using CondoSync.Application.Services;
 
 namespace CondoSync.Api.Controllers;
@@ -53,10 +54,6 @@ public class TicketsController : BaseController
         if (!userId.HasValue) return Unauthorized();
 
         var message = await _ticketService.AddMessageAsync(id, userId.Value, request.Message, request.IsInternal);
-        return message == null ? NotFound() : Ok(new { success = true, data = message });
+            return message == null ? NotFound() : Ok(new { success = true, data = message });
     }
 }
-
-public record CreateTicketRequest(Guid UnitId, Guid ResidentId, string Title, string Description, string Category, string Priority = "Normal", string? Subcategory = null);
-public record UpdateTicketStatusRequest(string Status, Guid? ResolvedBy = null, string? Resolution = null);
-public record AddTicketMessageRequest(string Message, bool IsInternal = false);

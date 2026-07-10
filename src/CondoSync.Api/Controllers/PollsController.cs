@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CondoSync.Application.Features.Polls.DTOs;
 using CondoSync.Application.Services;
 
 namespace CondoSync.Api.Controllers;
@@ -83,6 +84,3 @@ public class PollsController : BaseController
         return result ? Ok(new { success = true, message = "Enquete removida" }) : NotFound();
     }
 }
-
-public record CreatePollRequest(string Title, List<PollOption> Options, DateTime StartsAt, DateTime EndsAt, string PollType = "Single", bool IsAnonymous = false, bool RequiresUnitVote = false, string? Description = null);
-public record VoteRequest(List<Guid> SelectedOptions);

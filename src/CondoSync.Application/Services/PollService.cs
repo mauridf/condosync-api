@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
 using CondoSync.Core.Entities;
 using CondoSync.Core.Enums;
+using CondoSync.Core.Exceptions;
 using CondoSync.Core.Interfaces;
+using CondoSync.Application.Features.Polls.DTOs;
 using Microsoft.Extensions.Logging;
 
 namespace CondoSync.Application.Services;
@@ -167,5 +169,3 @@ public class PollService
         return true;
     }
 }
-
-public record PollOption(Guid Id, string Text, int Order);

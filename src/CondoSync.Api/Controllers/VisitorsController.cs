@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CondoSync.Application.Features.Visitors.DTOs;
 using CondoSync.Application.Services;
 using CondoSync.Core.Enums;
 
@@ -51,12 +52,6 @@ public class VisitorsController : BaseController
     public async Task<IActionResult> Cancel(Guid id)
     {
         var visitor = await _visitorService.CancelAuthorizationAsync(id);
-        return visitor == null ? NotFound() : Ok(new { success = true, message = "Autorização cancelada" });
+            return visitor == null ? NotFound() : Ok(new { success = true, message = "Autorização cancelada" });
     }
 }
-
-// DTOs inline para simplificar
-public record AuthorizeVisitorRequest(
-    Guid UnitId, string Name, DateTime VisitDate, string VisitorType = "Guest",
-    Guid? ResidentId = null, string? Phone = null, string? CompanyName = null, string? Notes = null
-);

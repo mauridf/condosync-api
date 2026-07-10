@@ -71,7 +71,10 @@ try
     // MediatR
     builder.Services.AddMediatR(cfg =>
     {
-        cfg.RegisterServicesFromAssembly(typeof(CondoSync.Application.Common.DTOs.PaginatedResult<>).Assembly);
+        cfg.RegisterServicesFromAssembly(typeof(CondoSync.Application.Common.DTOs.ErrorResponse).Assembly);
+        cfg.AddOpenBehavior(typeof(CondoSync.Application.Common.Behaviors.LoggingBehavior<,>));
+        cfg.AddOpenBehavior(typeof(CondoSync.Application.Common.Behaviors.ValidationBehavior<,>));
+        cfg.AddOpenBehavior(typeof(CondoSync.Application.Common.Behaviors.TenantBehavior<,>));
     });
 
     // FluentValidation

@@ -1,4 +1,4 @@
-﻿namespace CondoSync.Application.Common.DTOs;
+namespace CondoSync.Core.Common;
 
 public class PaginatedResult<T>
 {
