@@ -56,6 +56,51 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Registra um novo morador via convite
+    /// </summary>
+    [HttpPost("register-resident")]
+    [AllowAnonymous]
+    [EnableRateLimiting("LoginEndpoint")]
+    public async Task<IActionResult> RegisterResident([FromBody] RegisterResidentRequest request)
+    {
+        try
+        {
+            var (user, accessToken, refreshToken) = await _authService.RegisterResidentAsync(
+                request.InvitationCode,
+                request.Name,
+                request.Email,
+                request.Password);
+
+            var response = new AuthResponse(
+                user.Id,
+                user.Name,
+                user.Email,
+                user.Role.ToString(),
+                user.CondominiumId,
+                accessToken,
+                refreshToken);
+
+            _logger.LogInformation("Morador registrado via convite: {Email}", request.Email);
+
+            return Ok(new { success = true, data = response });
+        }
+        catch (InvalidOperationException ex)
+        {
+            var code = ex.Message;
+            var message = code switch
+            {
+                "INVITATION_NOT_FOUND" => "Convite não encontrado",
+                "INVITATION_NOT_ACTIVE" => "Convite não está ativo",
+                "INVITATION_EXPIRED" => "Convite expirado",
+                "INVITATION_MAX_USES" => "Convite já atingiu o limite de usos",
+                "EMAIL_ALREADY_REGISTERED" => "Este email já está registrado neste condomínio",
+                _ => ex.Message
+            };
+            return BadRequest(new { success = false, error = new { code, message } });
+        }
+    }
+
+    /// <summary>
     /// Realiza login de usuário do condomínio
     /// </summary>
     [HttpPost("login")]

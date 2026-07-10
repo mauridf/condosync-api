@@ -81,6 +81,13 @@ public record TwoFactorSetupResponse(
     string QrCodeUrl
 );
 
+public record RegisterResidentRequest(
+    string InvitationCode,
+    string Name,
+    string Email,
+    string Password
+);
+
 public record UpdateProfileRequest(
     string? Name,
     string? Phone = null,

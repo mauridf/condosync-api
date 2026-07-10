@@ -11,6 +11,8 @@ public class AuthService
 {
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<Condominium> _condominiumRepository;
+    private readonly IRepository<Resident> _residentRepository;
+    private readonly IRepository<UnitInvitation> _invitationRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
@@ -19,6 +21,8 @@ public class AuthService
     public AuthService(
         IRepository<User> userRepository,
         IRepository<Condominium> condominiumRepository,
+        IRepository<Resident> residentRepository,
+        IRepository<UnitInvitation> invitationRepository,
         IUnitOfWork unitOfWork,
         IPasswordHasher passwordHasher,
         ITokenService tokenService,
@@ -26,6 +30,8 @@ public class AuthService
     {
         _userRepository = userRepository;
         _condominiumRepository = condominiumRepository;
+        _residentRepository = residentRepository;
+        _invitationRepository = invitationRepository;
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
@@ -76,6 +82,74 @@ public class AuthService
             condominiumSlug, adminEmail);
 
         return (adminUser, accessToken, refreshToken);
+    }
+
+    public async Task<(User user, string accessToken, string refreshToken)> RegisterResidentAsync(
+        string invitationCode, string name, string email, string password)
+    {
+        var invitations = await _invitationRepository.FindAsync(i => i.InvitationCode == invitationCode);
+        var invitation = invitations.FirstOrDefault();
+
+        if (invitation == null)
+            throw new InvalidOperationException("INVITATION_NOT_FOUND");
+
+        if (invitation.Status != "active")
+            throw new InvalidOperationException("INVITATION_NOT_ACTIVE");
+
+        if (invitation.ExpiresAt.HasValue && DateTime.UtcNow > invitation.ExpiresAt.Value)
+            throw new InvalidOperationException("INVITATION_EXPIRED");
+
+        if (invitation.UsesCount >= invitation.MaxUses)
+            throw new InvalidOperationException("INVITATION_MAX_USES");
+
+        var existingUsers = await _userRepository.FindAsync(u =>
+            u.Email == email && u.CondominiumId == invitation.CondominiumId && u.IsActive);
+        if (existingUsers.Any())
+            throw new InvalidOperationException("EMAIL_ALREADY_REGISTERED");
+
+        var passwordHash = _passwordHasher.HashPassword(password);
+
+        var user = User.Create(
+            invitation.CondominiumId,
+            name,
+            email,
+            passwordHash,
+            UserRole.Resident);
+
+        await _userRepository.AddAsync(user);
+
+        var existingResidents = await _residentRepository.FindAsync(r =>
+            r.Email == email && r.CondominiumId == invitation.CondominiumId && r.IsActive);
+        var resident = existingResidents.FirstOrDefault();
+
+        if (resident == null)
+        {
+            resident = Resident.Create(
+                invitation.CondominiumId,
+                invitation.UnitId,
+                name,
+                ResidentType.Tenant,
+                email: email,
+                phone: invitation.RecipientPhone);
+
+            await _residentRepository.AddAsync(resident);
+        }
+
+        resident.LinkUser(user.Id);
+        invitation.Use();
+
+        await _unitOfWork.SaveChangesAsync();
+
+        var (accessToken, refreshToken) = _tokenService.GenerateTokenPair(
+            user.Id, invitation.CondominiumId, UserRole.Resident.ToString(), user.Name, user.Email);
+
+        user.SetRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Morador registrado: {Email} no condomínio {CondominiumId} via convite {Code}",
+            email, invitation.CondominiumId, invitationCode);
+
+        return (user, accessToken, refreshToken);
     }
 
     public async Task<(User user, string accessToken, string refreshToken)?> LoginAsync(

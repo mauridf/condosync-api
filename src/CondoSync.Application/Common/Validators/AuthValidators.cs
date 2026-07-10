@@ -67,3 +67,14 @@ public class AdminLoginRequestValidator : AbstractValidator<AdminLoginRequest>
         RuleFor(x => x.Password).NotEmpty();
     }
 }
+
+public class RegisterResidentRequestValidator : AbstractValidator<RegisterResidentRequest>
+{
+    public RegisterResidentRequestValidator()
+    {
+        RuleFor(x => x.InvitationCode).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(200);
+        RuleFor(x => x.Password).NotEmpty().MinimumLength(6).MaximumLength(100);
+    }
+}
